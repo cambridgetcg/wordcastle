@@ -36,6 +36,8 @@ a slogan.
     │   └── warden.md       the autonomous turner, plainly explained
     ├── keep/keep.md        distillations of closed loops, newest first
     ├── rooms/<room>/       room.md (purpose + ledger) and one file per insight
+    ├── front/              the public face, rendered by publish — generated,
+    │                       like map.md, and carried to the web only by hand
     └── loops/
         ├── open/           loops still turning
         ├── closed/         loops that closed — moved whole, never deleted
@@ -162,6 +164,17 @@ creating autonomous loops. Its bounds are code, not promises: one loop per
 run, at most 2 spawns per turn, at most 12 loops open, lineages at most 3
 deep, every refusal written down, every run journaled, and `warden stop` ends
 it with one command. The full account is in `foundation/warden.md`.
+
+## The front — a window, not a door
+
+The castle is private by construction, but it can show a face: `publish`
+renders `front/` — plain HTML of the five self-description pages plus every
+insight or loop file the keeper marked with a `public: yes` line. The marking
+is the whole protocol: no line, no leaving. Rendering makes no network call;
+the front reaches the web only when the keeper carries it there (today it
+stands behind Cambridge TCG, on the keeper's own Vercel team). Every front
+page states when it was rendered and how many words are marked public, so the
+window never pretends to show more — or less — than it does.
 
 ## Why words first
 

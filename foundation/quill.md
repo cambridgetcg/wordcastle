@@ -50,6 +50,20 @@ itself, then asks: room, title, loop link, and what you take from it (blank is
 allowed and honest). Fetched words stay blockquoted, apart from yours. On any
 failure, nothing is saved.
 
+### `node castle.mjs publish`
+Render the front — the castle's public face — into `front/` as plain HTML:
+the five self-description pages (gate, design, vows, quill, warden) and a
+words page holding every insight or loop file that carries a `public: yes`
+line. Nothing else ever appears there; the keep, the rooms, and the loops
+stay private until marked. Publishing makes **no network call** — it only
+writes files. Carrying `front/` to the web (e.g. `vercel deploy`) is a
+separate, deliberate act, and the front says on every page how many words
+were marked public and when it was rendered.
+
+To mark a word public, add a line reading exactly `public: yes` to the
+insight or loop file. Remove the line and the next `publish` withdraws it
+from the rendering (what already reached the web stays until you redeploy).
+
 ### `node castle.mjs warden once | start [hours] | stop | status`
 The autonomous turner — see `foundation/warden.md`. Its `claude` call is the
 castle's only other road to the world, and it opens only when you wake it.
@@ -82,6 +96,9 @@ writes a prose line of yours that begins with `#`, it indents it two spaces.
 
 In a room's `room.md`: the line starting `purpose:`. The `## Insights` ledger
 is appended to, never parsed.
+
+In any insight or loop file: a line reading exactly `public: yes` — read only
+by `publish`, and only to decide what the front may show.
 
 In `keep/keep.md`: entries are recognized by their `## ` headings (for the
 map's counts) and new entries are placed newest-first.

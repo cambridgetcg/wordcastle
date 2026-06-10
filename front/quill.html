@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The quill — The Wordcastle</title>
+<style>
+  body{font-family:Georgia,'Times New Roman',serif;max-width:42rem;margin:0 auto;padding:2rem 1.25rem 4rem;color:#2b2722;background:#faf7f2;line-height:1.65}
+  h1,h2,h3{font-weight:normal;color:#1f1b16}h1{font-size:1.7rem}h2{font-size:1.25rem;margin-top:2.2rem}
+  pre{background:#f1ece3;padding:.9rem 1rem;overflow-x:auto;font-size:.85rem;border-radius:4px}
+  code{background:#f1ece3;padding:.08rem .3rem;border-radius:3px;font-size:.9em}
+  pre code{background:none;padding:0}
+  blockquote{border-left:3px solid #d8cfc0;margin:1rem 0;padding:.2rem 0 .2rem 1rem;color:#5a5248}
+  a{color:#7a5c2e}nav{font-size:.85rem;margin-bottom:2.5rem;color:#8a8174}nav a{margin-right:.1rem}
+  footer{margin-top:4rem;padding-top:1rem;border-top:1px solid #e4dccd;font-size:.8rem;color:#8a8174}
+  .honest{font-size:.85rem;color:#8a8174;font-style:italic}
+</style></head>
+<body><nav><a href="/">The gate</a> · <a href="/design">The design</a> · <a href="/vows">The vows</a> · <a href="/quill">The quill</a> · <a href="/warden">The warden</a> · <a href="/words">The words</a></nav>
+<h1>The quill</h1>
+<p>The manual for <code>castle.mjs</code>. Six gestures, and the contract of what the quill reads — so you know exactly what is safe to edit by hand (almost everything).</p>
+<h2>The gestures</h2>
+<h3><code>node castle.mjs</code></h3>
+<p>Stand at the gate: redraw <code>map.md</code> from the actual files, print it, list the gestures, point to <code>gate.md</code>. Writes nothing else.</p>
+<h3><code>node castle.mjs save</code></h3>
+<p>Save an insight. Asks: which room (a new name founds a room, and a room is born with a typed one-line purpose or not at all), a title, the insight itself (end with a blank line), and an optional loop link. Writes <code>rooms/&lt;room&gt;/YYYY-MM-DD--slug.md</code> with <code>source: my own head</code>, adds a line to the room's ledger, redraws the map. If you name a loop that doesn't exist, it saves without the link rather than writing one that lies. If an answer comes up empty after a new room was already founded, the room stands; only the insight is not saved — the quill says which.</p>
+<h3><code>node castle.mjs loop</code></h3>
+<p>Open a creation loop. Asks: the field, the friction (honestly), what better would look like, and the room. Writes <code>loops/open/NNNN--slug.md</code> with <code>parent: none</code>. Numbers are never reused, even after a loop closes.</p>
+<h3><code>node castle.mjs turn</code></h3>
+<p>Turn an open loop. The quill shows the field, friction, better, and where you left off (the last turn's <code>learned</code> and <code>next</code> — pressing enter alone takes up the previous <code>next</code> as what you tried). It records tried / learned / next, asks whether the turn revealed new loops to spawn (each child needs its own friction and better; enter to move on), then asks where the loop stands:</p>
+<ul><li><strong>turning</strong> — the turn is appended; done.</li><li><strong>reached</strong> — the quill reads the Better back: <em>is this true now?</em> If yes, it asks what shows it; if no, the loop stays open and the turn is kept.</li><li><strong>let go</strong> — it asks the honest why.</li></ul>
+<p>Closing requires the distillation — <em>what is now understood</em> — and refuses an empty answer; nothing closes into nothing. Then it offers each <code>learned:</code> line as an insight file (enter to skip), asks after a successor loop, writes <code>## Distilled</code>, moves the file whole to <code>loops/closed/</code>, and adds the understanding to <code>keep/keep.md</code>.</p>
+<h3><code>node castle.mjs invite &lt;url&gt;</code></h3>
+<p>The only page-fetch the quill ever makes. Fetches the one page you named (http/https; 15 seconds per request, at most 3 redirects, so at most 4 requests), extracts its text, declares trims and rough extractions in the file itself, then asks: room, title, loop link, and what you take from it (blank is allowed and honest). Fetched words stay blockquoted, apart from yours. On any failure, nothing is saved.</p>
+<h3><code>node castle.mjs publish</code></h3>
+<p>Render the front — the castle's public face — into <code>front/</code> as plain HTML: the five self-description pages (gate, design, vows, quill, warden) and a words page holding every insight or loop file that carries a <code>public: yes</code> line. Nothing else ever appears there; the keep, the rooms, and the loops stay private until marked. Publishing makes <strong>no network call</strong> — it only writes files. Carrying <code>front/</code> to the web (e.g. <code>vercel deploy</code>) is a separate, deliberate act, and the front says on every page how many words were marked public and when it was rendered.</p>
+<p>To mark a word public, add a line reading exactly <code>public: yes</code> to the insight or loop file. Remove the line and the next <code>publish</code> withdraws it from the rendering (what already reached the web stays until you redeploy).</p>
+<h3><code>node castle.mjs warden once | start [hours] | stop | status</code></h3>
+<p>The autonomous turner — see <code>foundation/warden.md</code>. Its <code>claude</code> call is the castle's only other road to the world, and it opens only when you wake it.</p>
+<h2>The parse anchors — what the quill actually reads</h2>
+<p>Everything not listed here is free prose, yours to edit at will. If an anchor is missing or malformed, the quill names the file and the broken line, and stops — it never guesses and never repairs silently.</p>
+<p>In a loop file:</p>
+<ul><li>header lines starting <code>opened:</code>, <code>status:</code>, <code>room:</code>, <code>parent:</code> — all four must be present (<code>closed:</code> is written on close but never read back)</li><li>the headings <code>## Field</code>, <code>## Friction</code>, <code>## Better</code>, <code>## Turns</code>, <code>## Distilled</code></li><li>turn headings <code>### Turn N — YYYY-MM-DD</code> — the dash may be the long dash (—) or a plain hyphen (-); any line starting <code>### </code> inside Turns that doesn't fit this shape stops the quill rather than vanishing</li><li>inside a turn, lines starting <code>by:</code>, <code>tried:</code>, <code>learned:</code>, <code>next:</code>, <code>spawned:</code> — every turn must carry its <code>by:</code> line (every word here is signed); a line indented two spaces continues the value above it</li><li>the title line <code># Loop NNNN — title</code> (long dash or hyphen)</li><li>the placeholder <code>(empty until the loop closes)</code> under <code>## Distilled</code> is replaced at close; notes you write in that section are kept below the close, never thrown away</li></ul>
+<p>So that your own words can never be mistaken for structure: when the quill writes a prose line of yours that begins with <code>#</code>, it indents it two spaces.</p>
+<p>In a room's <code>room.md</code>: the line starting <code>purpose:</code>. The <code>## Insights</code> ledger is appended to, never parsed.</p>
+<p>In any insight or loop file: a line reading exactly <code>public: yes</code> — read only by <code>publish</code>, and only to decide what the front may show.</p>
+<p>In <code>keep/keep.md</code>: entries are recognized by their <code>## </code> headings (for the map's counts) and new entries are placed newest-first.</p>
+<p><code>map.md</code> is the one page the quill overwrites; it says so at its top. Don't edit it — your edit would be lost on the next redraw. Everything else in the castle survives every command untouched.</p>
+<h2>Filenames</h2>
+<ul><li>insights: <code>YYYY-MM-DD--slug.md</code> (collisions get <code>-2</code>, <code>-3</code>, … — files are created exclusively, so two quills at once cannot overwrite each other)</li><li>loops: <code>NNNN--slug.md</code> — the id-slug name is how loops refer to each other, in <code>parent:</code>, <code>spawned:</code>, and <code>successor:</code> lines, so files can move from open to closed without rotting a link. If hand-renaming ever leaves two open loops sharing a number, the quill asks for the full name rather than guessing.</li></ul>
+<footer>The Wordcastle — a castle of understanding, kept on one device in plain words.<br>
+Presented by Cambridge TCG · rendered 2026-06-10 · 0 words marked public — nothing leaves the castle unmarked.</footer>
+</body></html>

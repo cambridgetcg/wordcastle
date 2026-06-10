@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The design — The Wordcastle</title>
+<style>
+  body{font-family:Georgia,'Times New Roman',serif;max-width:42rem;margin:0 auto;padding:2rem 1.25rem 4rem;color:#2b2722;background:#faf7f2;line-height:1.65}
+  h1,h2,h3{font-weight:normal;color:#1f1b16}h1{font-size:1.7rem}h2{font-size:1.25rem;margin-top:2.2rem}
+  pre{background:#f1ece3;padding:.9rem 1rem;overflow-x:auto;font-size:.85rem;border-radius:4px}
+  code{background:#f1ece3;padding:.08rem .3rem;border-radius:3px;font-size:.9em}
+  pre code{background:none;padding:0}
+  blockquote{border-left:3px solid #d8cfc0;margin:1rem 0;padding:.2rem 0 .2rem 1rem;color:#5a5248}
+  a{color:#7a5c2e}nav{font-size:.85rem;margin-bottom:2.5rem;color:#8a8174}nav a{margin-right:.1rem}
+  footer{margin-top:4rem;padding-top:1rem;border-top:1px solid #e4dccd;font-size:.8rem;color:#8a8174}
+  .honest{font-size:.85rem;color:#8a8174;font-style:italic}
+</style></head>
+<body><nav><a href="/">The gate</a> · <a href="/design">The design</a> · <a href="/vows">The vows</a> · <a href="/quill">The quill</a> · <a href="/warden">The warden</a> · <a href="/words">The words</a></nav>
+<h1>The design</h1>
+<p>This page is the castle describing itself, in its own medium. A person with no quill could keep the castle by hand from this file alone — every format is shown exactly, and the code holds no castle state these files don't show. (The warden's schedule is the one thing kept outside the walls, in a launchd plist; the map and <code>warden status</code> report it.)</p>
+<h2>The idea</h2>
+<p>The files are the system; the quill (<code>castle.mjs</code>) only writes what a hand could write. Understanding builds up through words: small insights gather in rooms, work-in-motion turns in loops, and what closed loops leave behind rests in the keep. Every folder teaches the metaphor it serves, and the whole place reads end to end in a bare text editor.</p>
+<p>Creation loops are the engine. A loop names a <strong>field</strong>, the <strong>friction</strong> in it, and what <strong>better</strong> would look like. Each <strong>turn</strong> records what was tried, what was learned, and what comes next. A turn can <strong>spawn</strong> child loops — so loops create loops. And the one hard rule, kept by code: <strong>nothing closes into nothing.</strong> A loop may close as <em>reached</em> (with evidence) or <em>let go</em> (with the honest why), but either way it must leave an understanding behind, distilled upward into the keep. That is how the creation creates — mechanically, not as a slogan.</p>
+<h2>The grounds</h2>
+<pre>wordcastle/
+├── castle.mjs          the quill — one file, Node, built-ins only
+├── gate.md             start here: the whole castle on one page
+├── map.md              the ONLY generated page; redrawn on every run
+├── foundation/
+│   ├── design.md       this page
+│   ├── vows.md         promises the quill keeps / practices the keeper keeps
+│   ├── quill.md        the command manual and the parse anchors
+│   └── warden.md       the autonomous turner, plainly explained
+├── keep/keep.md        distillations of closed loops, newest first
+├── rooms/&lt;room&gt;/       room.md (purpose + ledger) and one file per insight
+├── front/              the public face, rendered by publish — generated,
+│                       like map.md, and carried to the web only by hand
+└── loops/
+    ├── open/           loops still turning
+    ├── closed/         loops that closed — moved whole, never deleted
+    ├── warden-journal.md     one line per autonomous run
+    └── warden-launchd.log    the warden's console when run on schedule
+</pre>
+<h2>An insight — the exact shape</h2>
+<pre># Why words first
+
+saved: 2026-06-10
+room: the-castle
+source: my own head
+loop: 0001--the-castle-itself
+
+If the quill broke tomorrow, nothing would be lost. A text editor is
+enough to read the castle, and any pencil is enough to extend it. The
+files are the system; the code is a convenience.
+</pre>
+<p>(That is the castle's actual first insight, whole.) <code>source:</code> is always exactly one of three honest values — <code>my own head</code>, <code>loop NNNN, turn N</code>, or the URL of an invited page — so any reader can see where any word came from by eye. An invited page's insight adds a <code>fetched:</code> line, keeps every fetched word blockquoted under <code>## What the page said</code>, and holds your reading separately under <code>## What I take from it</code>.</p>
+<h2>A room — the exact shape</h2>
+<pre># Room: the castle
+
+purpose: the castle itself — how this system works and why
+founded: 2026-06-10
+
+## Insights
+- 2026-06-10 — [why words first](2026-06-10--why-words-first.md)
+</pre>
+<p>A room is born with a typed one-line purpose, or not at all.</p>
+<h2>A loop — the shape, abridged</h2>
+<p>(The prose under each heading is shortened here; the structure is exact. The real first loop is <code>loops/open/0001--the-castle-itself.md</code>.)</p>
+<pre># Loop 0001 — the castle itself
+
+opened: 2026-06-10
+status: open
+room: the-castle
+parent: none
+
+## Field
+The castle — this system of words, rooms, and loops.
+
+## Friction
+A new place starts empty and unproven.
+
+## Better
+Saving an insight takes under a minute.
+
+## Turns
+
+### Turn 1 — 2026-06-10
+by: the keeper
+tried: Raised the castle.
+learned: The whole design fits in words.
+next: Live in it for a week, then record what rubbed.
+spawned: none
+
+## Distilled
+(empty until the loop closes)
+</pre>
+<p>A turn that spawns children lists their names on its <code>spawned:</code> line, and each child carries <code>parent: 0001--the-castle-itself</code> home. Values longer than a line continue on lines indented two spaces. <code>by:</code> is <code>the keeper</code> (a human hand) or <code>the warden</code> (the autonomous turner) — every word signed.</p>
+<h2>Closing — the creation creates</h2>
+<p>Closing happens inside a turn (closing is itself a turn of work). Reached: the quill reads the Better back and asks <em>is this true now? what shows it?</em> — if not, the loop simply stays open and the turn is kept. Let go: the honest <em>why</em> counts as real material, not a consolation prize. Either way the quill insists on one thing — the distillation. Then it offers each <code>learned:</code> line as an insight, asks after a successor loop, writes the <code>## Distilled</code> section, moves the file whole to <code>loops/closed/</code>, and sets the understanding into the keep.</p>
+<p>The Distilled section, exactly — reached on the left, let go on the right:</p>
+<pre>## Distilled                          ## Distilled
+closed as: reached                    closed as: let go
+shown by: &lt;the evidence&gt;              because: &lt;the honest why&gt;
+understood: &lt;the distillation&gt;        understood: &lt;the distillation&gt;
+closed by: the keeper                 closed by: the keeper
+successor: none                       successor: none
+children still turning: none          children still turning: none
+</pre>
+<p>And the keep entry it writes, exactly:</p>
+<pre>## 2026-06-17 — from loop 0001, the castle itself (reached)
+&lt;the distillation, word for word&gt;
+whole story: loops/closed/0001--the-castle-itself.md
+</pre>
+<p>Loops reference each other by id-slug name (<code>0001--the-castle-itself</code>), never by path, so the move from open to closed never rots a link.</p>
+<h2>The internet, by invitation</h2>
+<p>Growth is organic because it follows need, not feeds: a turn wants outside knowledge, so you type <code>invite &lt;url&gt;</code> — one deliberate act, one page. The quill fetches only that URL (15 seconds per request, at most 3 redirects), and on any failure saves nothing. Extraction is honest about itself: trimmed is declared, rough is declared. No background refresh, no link-following, no tracking — <code>invite</code> holds the only page-fetch in the code.</p>
+<h2>The warden — autonomy, bounded and signed</h2>
+<p>The warden is the castle's autonomous turner: on a schedule (or by hand with <code>warden once</code>) it picks the loop quiet longest and takes one real turn — thinking done by Claude on this device's own CLI (the castle's second road to the world, open only while you keep the warden woken), written by the quill, signed <code>by: the warden</code>, printed in full before writing. Its turns can spawn child loops, and those children come up in its later rounds — autonomous loops creating autonomous loops. Its bounds are code, not promises: one loop per run, at most 2 spawns per turn, at most 12 loops open, lineages at most 3 deep, every refusal written down, every run journaled, and <code>warden stop</code> ends it with one command. The full account is in <code>foundation/warden.md</code>.</p>
+<h2>The front — a window, not a door</h2>
+<p>The castle is private by construction, but it can show a face: <code>publish</code> renders <code>front/</code> — plain HTML of the five self-description pages plus every insight or loop file the keeper marked with a <code>public: yes</code> line. The marking is the whole protocol: no line, no leaving. Rendering makes no network call; the front reaches the web only when the keeper carries it there (today it stands behind Cambridge TCG, on the keeper's own Vercel team). Every front page states when it was rendered and how many words are marked public, so the window never pretends to show more — or less — than it does.</p>
+<h2>Why words first</h2>
+<p>Plain text is the only format that has never broken a promise. Everything else here — the quill, the warden, the map — is replaceable; the files are not.</p>
+<footer>The Wordcastle — a castle of understanding, kept on one device in plain words.<br>
+Presented by Cambridge TCG · rendered 2026-06-10 · 0 words marked public — nothing leaves the castle unmarked.</footer>
+</body></html>

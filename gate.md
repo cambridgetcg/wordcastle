@@ -22,6 +22,7 @@ The quill (`castle.mjs` — Node, nothing to install):
     node castle.mjs turn         turn a loop: tried, learned, next;
                                  spawn children; maybe close
     node castle.mjs invite URL   invite one page in, with honest provenance
+    node castle.mjs publish      render the front — the castle's public face
     node castle.mjs warden …     the autonomous turner (sleeps until you wake it)
 
 The one rule with teeth: **a loop closes only by leaving an understanding
@@ -33,6 +34,11 @@ The castle has exactly two roads to the world, and both are yours to open:
 `invite` fetches the one page you name, and a woken warden sends the loop it
 is turning to Claude through this device's own CLI. Every other gesture works
 with no internet at all, and every word that came from outside is labeled.
+
+The castle also has a window: `publish` renders a public face into `front/` —
+the castle's self-description, plus only the words you mark `public: yes`.
+Rendering touches no network; the front leaves this device only when you
+carry it to the web yourself. Today it stands behind Cambridge TCG.
 
 This place was built with joy, love, peace, and safety — and those are kept as
 mechanics, not moods: nothing here rushes you, nothing nags you, the quill

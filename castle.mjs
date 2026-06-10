@@ -361,6 +361,15 @@ function drawMap() {
   if (!entries.length) lines.push('nothing distilled yet — the loops are still turning')
   else lines.push(`${entries.length} understanding${entries.length === 1 ? '' : 's'} · latest: ${entries[0].slice(3)}`)
 
+  lines.push('', '## The front')
+  if (fs.existsSync(path.join(FRONT, 'index.html'))) {
+    const when = fs.statSync(path.join(FRONT, 'index.html')).mtime.toISOString().slice(0, 10)
+    const pub = publicFiles().length
+    lines.push(`rendered ${when} — ${pub} word${pub === 1 ? '' : 's'} marked public; carry it to the web yourself when you choose`)
+  } else {
+    lines.push('not rendered — node castle.mjs publish builds it from the castle\'s own words')
+  }
+
   lines.push('', '## The warden')
   if (fs.existsSync(PLIST)) {
     const secs = Number((fs.readFileSync(PLIST, 'utf8').match(/<key>StartInterval<\/key><integer>(\d+)<\/integer>/) || [])[1])
@@ -423,7 +432,7 @@ async function askLoopLink(rl) {
 
 function help() {
   console.log(`
-The quill knows six gestures:
+The quill knows seven gestures:
 
   node castle.mjs              see the map
   node castle.mjs save         save an insight into a room
@@ -431,6 +440,8 @@ The quill knows six gestures:
   node castle.mjs turn         turn a loop: tried, learned, next; spawn
                                children; maybe close (a close must create)
   node castle.mjs invite URL   invite one page in, with honest provenance
+  node castle.mjs publish      render the front: the castle's self-description
+                               plus words marked "public: yes" — files only
   node castle.mjs warden …     the autonomous turner: once | start | stop | status
 
 New here? Read gate.md — the whole castle is plain words in plain files.`)
@@ -669,6 +680,120 @@ async function invite(rl, rawUrl) {
   console.log(`\nInvited in: ${path.relative(ROOT, file)} — fetched words stay blockquoted, apart from yours.`)
 }
 
+// ---------------------------------------------------------------- publish
+// The front: a read-only rendering of the castle's self-description plus
+// whatever the keeper marked with a `public: yes` line. publish makes no
+// network call; carrying front/ to the web is a separate, deliberate act.
+
+const FRONT = path.join(ROOT, 'front')
+
+const escHtml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+function inlineHtml(s) {
+  // Protect code spans first so nothing inside them is restyled.
+  const codes = []
+  s = escHtml(s).replace(/`([^`]+)`/g, (_, c) => { codes.push(c); return `\u0001${codes.length - 1}\u0001` })
+  s = s
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+    .replace(/\b_([^_]+)_\b/g, '<em>$1</em>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, t, u) => `<a href="${u.replace(/"/g, '&quot;')}">${t}</a>`)
+  return s.replace(/\u0001(\d+)\u0001/g, (_, i) => `<code>${codes[i]}</code>`)
+}
+
+function mdToHtml(md) {
+  const out = []
+  let para = [], list = null, code = null, quote = null
+  const flush = () => {
+    if (para.length) { out.push(`<p>${inlineHtml(para.join(' '))}</p>`); para = [] }
+    if (list) { out.push(`<ul>${list.map((i) => `<li>${inlineHtml(i)}</li>`).join('')}</ul>`); list = null }
+    if (code) { out.push(`<pre>${escHtml(code.join('\n'))}</pre>`); code = null }
+    if (quote) { out.push(`<blockquote>${quote.map((q) => inlineHtml(q)).join('<br>')}</blockquote>`); quote = null }
+  }
+  for (const line of md.split('\n')) {
+    if (line.startsWith('    ') && !list && !para.length) {
+      if (!code) { flush(); code = [] }
+      code.push(line.slice(4)); continue
+    }
+    if (code && !line.trim()) { code.push(''); continue }
+    if (code) flush()
+    const h = line.match(/^(#{1,3}) (.*)$/)
+    if (h) { flush(); out.push(`<h${h[1].length}>${inlineHtml(h[2])}</h${h[1].length}>`); continue }
+    if (line.startsWith('> ')) { if (!quote) { flush(); quote = [] } quote.push(line.slice(2)); continue }
+    if (line.startsWith('- ')) { if (!list) { flush(); list = [] } list.push(line.slice(2)); continue }
+    if (list && line.startsWith('  ') && line.trim()) { list[list.length - 1] += ' ' + line.trim(); continue }
+    if (!line.trim()) { flush(); continue }
+    if (quote) flush()
+    para.push(line.trim())
+  }
+  flush()
+  // Trim trailing blank lines inside the last code block rendering.
+  return out.join('\n').replace(/\n+<\/pre>/g, '\n</pre>')
+}
+
+const FRONT_PAGES = [
+  ['index', 'The gate', 'gate.md'],
+  ['design', 'The design', 'foundation/design.md'],
+  ['vows', 'The vows', 'foundation/vows.md'],
+  ['quill', 'The quill', 'foundation/quill.md'],
+  ['warden', 'The warden', 'foundation/warden.md'],
+]
+
+function frontLayout(title, body, publicCount) {
+  const nav = [...FRONT_PAGES.map(([slug, name]) => `<a href="/${slug === 'index' ? '' : slug}">${name}</a>`), '<a href="/words">The words</a>'].join(' · ')
+  return `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${escHtml(title)} — The Wordcastle</title>
+<style>
+  body{font-family:Georgia,'Times New Roman',serif;max-width:42rem;margin:0 auto;padding:2rem 1.25rem 4rem;color:#2b2722;background:#faf7f2;line-height:1.65}
+  h1,h2,h3{font-weight:normal;color:#1f1b16}h1{font-size:1.7rem}h2{font-size:1.25rem;margin-top:2.2rem}
+  pre{background:#f1ece3;padding:.9rem 1rem;overflow-x:auto;font-size:.85rem;border-radius:4px}
+  code{background:#f1ece3;padding:.08rem .3rem;border-radius:3px;font-size:.9em}
+  pre code{background:none;padding:0}
+  blockquote{border-left:3px solid #d8cfc0;margin:1rem 0;padding:.2rem 0 .2rem 1rem;color:#5a5248}
+  a{color:#7a5c2e}nav{font-size:.85rem;margin-bottom:2.5rem;color:#8a8174}nav a{margin-right:.1rem}
+  footer{margin-top:4rem;padding-top:1rem;border-top:1px solid #e4dccd;font-size:.8rem;color:#8a8174}
+  .honest{font-size:.85rem;color:#8a8174;font-style:italic}
+</style></head>
+<body><nav>${nav}</nav>
+${body}
+<footer>The Wordcastle — a castle of understanding, kept on one device in plain words.<br>
+Presented by Cambridge TCG · rendered ${today()} · ${publicCount} word${publicCount === 1 ? '' : 's'} marked public — nothing leaves the castle unmarked.</footer>
+</body></html>\n`
+}
+
+function publicFiles() {
+  const files = []
+  for (const room of listRooms()) {
+    for (const f of fs.readdirSync(path.join(ROOMS, room))) {
+      if (/^\d{4}-\d{2}-\d{2}--.*\.md$/.test(f)) files.push(path.join(ROOMS, room, f))
+    }
+  }
+  files.push(...loopFiles(OPEN), ...loopFiles(CLOSED))
+  return files.filter((f) => /^public: yes$/m.test(fs.readFileSync(f, 'utf8')))
+}
+
+function publish() {
+  ensureGrounds()
+  fs.mkdirSync(FRONT, { recursive: true })
+  const pub = publicFiles()
+  for (const [slug, , src] of FRONT_PAGES) {
+    const file = path.join(ROOT, src)
+    const body = fs.existsSync(file) ? mdToHtml(fs.readFileSync(file, 'utf8')) : '<p>(this page is missing inside the castle)</p>'
+    fs.writeFileSync(path.join(FRONT, `${slug}.html`), frontLayout(FRONT_PAGES.find((p) => p[0] === slug)[1], body, pub.length))
+  }
+  let words = '<h1>The words</h1>\n<p class="honest">Everything below was deliberately marked <code>public: yes</code> by the keeper. The rest of the castle — its rooms, loops, and keep — stays on the device it was written on.</p>\n'
+  if (!pub.length) words += '<p>(nothing is marked public yet — the castle is still a private place)</p>\n'
+  for (const f of pub) {
+    words += `\n${mdToHtml(fs.readFileSync(f, 'utf8')).replace(/<h1>/, '<h2>').replace(/<\/h1>/, '</h2>')}\n<p class="honest">from ${escHtml(path.relative(ROOT, f))}</p>\n`
+  }
+  fs.writeFileSync(path.join(FRONT, 'words.html'), frontLayout('The words', words, pub.length))
+  fs.writeFileSync(path.join(FRONT, 'vercel.json'), JSON.stringify({ cleanUrls: true, trailingSlash: false }, null, 2) + '\n')
+  drawMap()
+  console.log(`Rendered the front: ${FRONT_PAGES.length + 1} pages into front/ — ${pub.length} marked public, everything else stayed home.`)
+  console.log('The front is only files until you carry it to the web yourself (e.g. vercel deploy).')
+}
+
 // ---------------------------------------------------------------- warden
 // The autonomous turner. Every word it writes is labeled "by: the warden".
 // Caps: at most ${SPAWN_CAP} spawns a turn, ${OPEN_CAP} loops open, ${DEPTH_CAP} deep.
@@ -868,6 +993,7 @@ const [verb, ...rest] = process.argv.slice(2)
 ensureGrounds()
 
 if (!verb) { bare() }
+else if (verb === 'publish') { publish() }
 else if (verb === 'warden') { await warden(rest[0], rest[1]) }
 else if (['save', 'loop', 'turn', 'invite'].includes(verb)) {
   const rl = makeRl()

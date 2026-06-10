@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The warden — The Wordcastle</title>
+<style>
+  body{font-family:Georgia,'Times New Roman',serif;max-width:42rem;margin:0 auto;padding:2rem 1.25rem 4rem;color:#2b2722;background:#faf7f2;line-height:1.65}
+  h1,h2,h3{font-weight:normal;color:#1f1b16}h1{font-size:1.7rem}h2{font-size:1.25rem;margin-top:2.2rem}
+  pre{background:#f1ece3;padding:.9rem 1rem;overflow-x:auto;font-size:.85rem;border-radius:4px}
+  code{background:#f1ece3;padding:.08rem .3rem;border-radius:3px;font-size:.9em}
+  pre code{background:none;padding:0}
+  blockquote{border-left:3px solid #d8cfc0;margin:1rem 0;padding:.2rem 0 .2rem 1rem;color:#5a5248}
+  a{color:#7a5c2e}nav{font-size:.85rem;margin-bottom:2.5rem;color:#8a8174}nav a{margin-right:.1rem}
+  footer{margin-top:4rem;padding-top:1rem;border-top:1px solid #e4dccd;font-size:.8rem;color:#8a8174}
+  .honest{font-size:.85rem;color:#8a8174;font-style:italic}
+</style></head>
+<body><nav><a href="/">The gate</a> · <a href="/design">The design</a> · <a href="/vows">The vows</a> · <a href="/quill">The quill</a> · <a href="/warden">The warden</a> · <a href="/words">The words</a></nav>
+<h1>The warden</h1>
+<p>The castle's autonomous turner — the answer to the founding wish that the loops turn even when no hand is on them, and that loops create loops (the wish itself is kept in the first room: <code>rooms/the-castle/</code>). Here is exactly what the warden is, what it does, what it costs, and how it stops. No mystery, no perpetual-motion claims.</p>
+<h2>What it is</h2>
+<p>A small routine that, on a schedule you set (or once, by hand), takes <strong>one real turn of one creation loop</strong>: it reads the loop quiet longest — its field, friction, better, and every prior turn — thinks about it using Claude through this device's own <code>claude</code> CLI, and writes the turn through the same quill your hands use: tried, learned, next. Signed <code>by: the warden</code>, always, and printed in full before it is written — nothing lands in a file unseen.</p>
+<p>Its turns can <strong>spawn child loops</strong> when the thinking truly reveals a new field with its own friction — and those children come up in its later rounds. That is the honest mechanics of "autonomous loops that create autonomous loops": the autonomy is a schedule, the creation is real work recorded in words, and every link in the chain is a file you can read.</p>
+<p>It can also <strong>close</strong> a loop — but only under the same vow as everyone else: reached needs evidence, let go needs the why, and either needs a real distillation. If it offers none, the loop stays open and the refusal is written into the turn itself. Nothing closes into nothing, not even for machines.</p>
+<h2>What honest autonomy means here</h2>
+<p>A pile of files cannot understand anything by itself, and this page will not pretend otherwise. What is autonomous: the waking, the choosing of the neediest loop, the turning, the spawning, the journaling. What does the understanding at each turn: a mind — yours at the keyboard, or Claude's when the warden wakes. The castle never hides which it was; every turn is signed.</p>
+<p>One more honest line: when the warden turns a loop, that loop's words (with the vows and a keep excerpt) travel to Claude over the network. That is the castle's second road to the world — and like <code>invite</code>, it opens only because you opened it.</p>
+<h2>The bounds (code, not promises)</h2>
+<ul><li>one loop turned per run</li><li>at most <strong>2</strong> child loops spawned per turn</li><li>it refuses to spawn past <strong>12</strong> open loops — your own hands are never capped</li><li>it refuses to spawn past <strong>3</strong> generations (a child of a child cannot spawn further)</li><li>every refusal — cap or close — is written into the turn itself, not hidden</li><li>every run leaves one line in <code>loops/warden-journal.md</code>; a missing line means it did not wake, or was cut down mid-run (<code>loops/warden-launchd.log</code> would say)</li><li>it reads the vows before every turn, and they bind it</li></ul>
+<h2>What it costs</h2>
+<p>Each turn spends a little of your Claude plan — the warden calls the <code>claude</code> CLI on this device. That is stated here so the schedule is a choice, never a surprise.</p>
+<h2>The commands</h2>
+<pre>node castle.mjs warden once          one turn, right now, by hand
+node castle.mjs warden start [h]     wake it: one turn every h hours (default 24)
+node castle.mjs warden stop          one command, and it rests
+node castle.mjs warden status        is it awake, and what did it last do
+</pre>
+<p><code>start</code> installs a launchd agent (<code>com.wordcastle.warden</code>) on this Mac — native to this device, no cloud, no server. <code>stop</code> removes it. The warden ships asleep: nothing autonomous happens until you choose to wake it.</p>
+<footer>The Wordcastle — a castle of understanding, kept on one device in plain words.<br>
+Presented by Cambridge TCG · rendered 2026-06-10 · 0 words marked public — nothing leaves the castle unmarked.</footer>
+</body></html>

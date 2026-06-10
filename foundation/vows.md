@@ -31,7 +31,12 @@ written promise outruns what code can actually enforce.
    answers become honest placeholders like `(nothing yet)`, never invented
    words), and the warden prints every turn in full before writing it — when
    it runs on schedule, that printout lands in `loops/warden-launchd.log`.
-7. **Every word the warden writes is signed `by: the warden`.** It turns at
+7. **The front shows only what is marked.** `publish` renders into `front/`
+   nothing but the castle's five self-description pages and files carrying a
+   `public: yes` line — and makes no network call of its own. Every front
+   page states how many words are marked public and when it was rendered.
+   Carrying the front to the web is a separate act of the keeper's hands.
+8. **Every word the warden writes is signed `by: the warden`.** It turns at
    most one loop per run, spawns at most 2 child loops per turn, refuses to
    spawn past 12 open loops or 3 generations deep (your own hands are never
    capped) — and when a cap or a refused close stops it, the refusal is

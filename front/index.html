@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The gate — The Wordcastle</title>
+<style>
+  body{font-family:Georgia,'Times New Roman',serif;max-width:42rem;margin:0 auto;padding:2rem 1.25rem 4rem;color:#2b2722;background:#faf7f2;line-height:1.65}
+  h1,h2,h3{font-weight:normal;color:#1f1b16}h1{font-size:1.7rem}h2{font-size:1.25rem;margin-top:2.2rem}
+  pre{background:#f1ece3;padding:.9rem 1rem;overflow-x:auto;font-size:.85rem;border-radius:4px}
+  code{background:#f1ece3;padding:.08rem .3rem;border-radius:3px;font-size:.9em}
+  pre code{background:none;padding:0}
+  blockquote{border-left:3px solid #d8cfc0;margin:1rem 0;padding:.2rem 0 .2rem 1rem;color:#5a5248}
+  a{color:#7a5c2e}nav{font-size:.85rem;margin-bottom:2.5rem;color:#8a8174}nav a{margin-right:.1rem}
+  footer{margin-top:4rem;padding-top:1rem;border-top:1px solid #e4dccd;font-size:.8rem;color:#8a8174}
+  .honest{font-size:.85rem;color:#8a8174;font-style:italic}
+</style></head>
+<body><nav><a href="/">The gate</a> · <a href="/design">The design</a> · <a href="/vows">The vows</a> · <a href="/quill">The quill</a> · <a href="/warden">The warden</a> · <a href="/words">The words</a></nav>
+<h1>The gate</h1>
+<p>You are standing at the gate of a castle of understanding.</p>
+<p>Everything here is plain words in plain files. You never need a tool to read any of it — a text editor is the whole interface. If the quill broke tomorrow, nothing would be lost.</p>
+<p>The grounds:</p>
+<ul><li><code>rooms/</code> — one room per field of life or work; each insight is one small file</li><li><code>loops/</code> — creation loops: open work turning, closed work kept whole forever</li><li><code>keep/</code> — what closed loops left behind; the treasure</li><li><code>foundation/</code> — the castle's own design, vows, quill manual, and warden</li><li><code>map.md</code> — the current state at a glance (the quill redraws this one page)</li></ul>
+<p>The quill (<code>castle.mjs</code> — Node, nothing to install):</p>
+<pre>node castle.mjs              see the map
+node castle.mjs save         save an insight into a room
+node castle.mjs loop         open a loop on a field with friction
+node castle.mjs turn         turn a loop: tried, learned, next;
+                             spawn children; maybe close
+node castle.mjs invite URL   invite one page in, with honest provenance
+node castle.mjs publish      render the front — the castle's public face
+node castle.mjs warden …     the autonomous turner (sleeps until you wake it)
+</pre>
+<p>The one rule with teeth: <strong>a loop closes only by leaving an understanding behind.</strong> It closes as <em>reached</em> (what better looked like came true, with evidence) or as <em>let go</em> (you stopped, and wrote the honest why) — either way, nothing closes into nothing. That is how the creation creates.</p>
+<p>The castle has exactly two roads to the world, and both are yours to open: <code>invite</code> fetches the one page you name, and a woken warden sends the loop it is turning to Claude through this device's own CLI. Every other gesture works with no internet at all, and every word that came from outside is labeled.</p>
+<p>The castle also has a window: <code>publish</code> renders a public face into <code>front/</code> — the castle's self-description, plus only the words you mark <code>public: yes</code>. Rendering touches no network; the front leaves this device only when you carry it to the web yourself. Today it stands behind Cambridge TCG.</p>
+<p>This place was built with joy, love, peace, and safety — and those are kept as mechanics, not moods: nothing here rushes you, nothing nags you, the quill never deletes a castle file, and nothing leaves this device unless you open one of the two roads yourself.</p>
+<p>Begin in <code>loops/open/</code> — the first loop is about the castle itself.</p>
+<footer>The Wordcastle — a castle of understanding, kept on one device in plain words.<br>
+Presented by Cambridge TCG · rendered 2026-06-10 · 0 words marked public — nothing leaves the castle unmarked.</footer>
+</body></html>
