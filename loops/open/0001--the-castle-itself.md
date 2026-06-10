@@ -39,5 +39,20 @@ learned: A private place can have a public face without breaking its vows,
 next: Live with the front; mark the first word public when one is ready to leave.
 spawned: none
 
+### Turn 3 — 2026-06-10
+by: claude, at the keeper's word ("reduce process, increase trust, reduce friction")
+tried: Hunted useless process. Saving is now one line with no questions —
+  ./castle.mjs save "the thought" — landing in a new default room, the hall.
+  The close stopped interrogating: no more y/n readback, no per-learned
+  offers, no successor question; the Better is shown beside one question and
+  the keeper is trusted. The bare command shows the map and one quiet line.
+  The gate was cut to half its words.
+learned: Friction hid in the questions that second-guessed the keeper, not in
+  the vows. The teeth — the distillation, room purposes, signed turns — cost
+  nothing at capture time; everything else could go.
+next: Watch whether the hall fills faster than it empties — if filing never
+  happens, the hall needs a gentler path to the rooms, not more process.
+spawned: none
+
 ## Distilled
 (empty until the loop closes)

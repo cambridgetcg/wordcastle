@@ -17,7 +17,7 @@
 <p>This page is the castle describing itself, in its own medium. A person with no quill could keep the castle by hand from this file alone — every format is shown exactly, and the code holds no castle state these files don't show. (The warden's schedule is the one thing kept outside the walls, in a launchd plist; the map and <code>warden status</code> report it.)</p>
 <h2>The idea</h2>
 <p>The files are the system; the quill (<code>castle.mjs</code>) only writes what a hand could write. Understanding builds up through words: small insights gather in rooms, work-in-motion turns in loops, and what closed loops leave behind rests in the keep. Every folder teaches the metaphor it serves, and the whole place reads end to end in a bare text editor.</p>
-<p>Creation loops are the engine. A loop names a <strong>field</strong>, the <strong>friction</strong> in it, and what <strong>better</strong> would look like. Each <strong>turn</strong> records what was tried, what was learned, and what comes next. A turn can <strong>spawn</strong> child loops — so loops create loops. And the one hard rule, kept by code: <strong>nothing closes into nothing.</strong> A loop may close as <em>reached</em> (with evidence) or <em>let go</em> (with the honest why), but either way it must leave an understanding behind, distilled upward into the keep. That is how the creation creates — mechanically, not as a slogan.</p>
+<p>Creation loops are the engine. A loop names a <strong>field</strong>, the <strong>friction</strong> in it, and what <strong>better</strong> would look like. Each <strong>turn</strong> records what was tried, what was learned, and what comes next. A turn can <strong>spawn</strong> child loops — so loops create loops. And the one hard rule, kept by code: <strong>nothing closes into nothing.</strong> A loop may close as <em>reached</em> (asked for evidence) or <em>let go</em> (asked for the why) — the asking is trusted, but the understanding left behind is required, distilled upward into the keep. That is how the creation creates — mechanically, not as a slogan.</p>
 <h2>The grounds</h2>
 <pre>wordcastle/
 ├── castle.mjs          the quill — one file, Node, built-ins only
@@ -60,7 +60,7 @@ founded: 2026-06-10
 ## Insights
 - 2026-06-10 — [why words first](2026-06-10--why-words-first.md)
 </pre>
-<p>A room is born with a typed one-line purpose, or not at all.</p>
+<p>A room is born with a typed one-line purpose, or not at all. One room is part of the design itself: <strong>the hall</strong> (<code>rooms/the-hall/</code>), where one-line saves land so that catching a thought never waits on a filing question. Move a word to a truer room whenever filing starts to matter — moving is just moving a file.</p>
 <h2>A loop — the shape, abridged</h2>
 <p>(The prose under each heading is shortened here; the structure is exact. The real first loop is <code>loops/open/0001--the-castle-itself.md</code>.)</p>
 <pre># Loop 0001 — the castle itself
@@ -91,16 +91,15 @@ spawned: none
 ## Distilled
 (empty until the loop closes)
 </pre>
-<p>A turn that spawns children lists their names on its <code>spawned:</code> line, and each child carries <code>parent: 0001--the-castle-itself</code> home. Values longer than a line continue on lines indented two spaces. <code>by:</code> is <code>the keeper</code> (a human hand) or <code>the warden</code> (the autonomous turner) — every word signed.</p>
+<p>A turn that spawns children lists their names on its <code>spawned:</code> line, and each child carries <code>parent: 0001--the-castle-itself</code> home. Values longer than a line continue on lines indented two spaces. <code>by:</code> is <code>the keeper</code> (a human hand), <code>the warden</code> (the autonomous turner), or any other honest signature — a helping hand names itself and at whose word it acted. The only rule is that every turn is signed.</p>
 <h2>Closing — the creation creates</h2>
-<p>Closing happens inside a turn (closing is itself a turn of work). Reached: the quill reads the Better back and asks <em>is this true now? what shows it?</em> — if not, the loop simply stays open and the turn is kept. Let go: the honest <em>why</em> counts as real material, not a consolation prize. Either way the quill insists on one thing — the distillation. Then it offers each <code>learned:</code> line as an insight, asks after a successor loop, writes the <code>## Distilled</code> section, moves the file whole to <code>loops/closed/</code>, and sets the understanding into the keep.</p>
+<p>Closing happens inside a turn (closing is itself a turn of work), and it asks as little as honesty allows. Reached: the quill shows the Better beside one question — <em>what shows it?</em> Let go: one question — <em>why?</em> — because the lesson of stopping counts as real material. Then the one insistence: the distillation. That's all. The <code>## Distilled</code> section is written, the file moves whole to <code>loops/closed/</code> (every <code>learned:</code> line travels with it), and the understanding is set into the keep.</p>
 <p>The Distilled section, exactly — reached on the left, let go on the right:</p>
 <pre>## Distilled                          ## Distilled
 closed as: reached                    closed as: let go
 shown by: &lt;the evidence&gt;              because: &lt;the honest why&gt;
 understood: &lt;the distillation&gt;        understood: &lt;the distillation&gt;
 closed by: the keeper                 closed by: the keeper
-successor: none                       successor: none
 children still turning: none          children still turning: none
 </pre>
 <p>And the keep entry it writes, exactly:</p>

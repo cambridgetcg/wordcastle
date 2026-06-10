@@ -22,10 +22,10 @@ loops": the autonomy is a schedule, the creation is real work recorded in
 words, and every link in the chain is a file you can read.
 
 It can also **close** a loop — but only under the same vow as everyone else:
-reached needs evidence, let go needs the why, and either needs a real
-distillation. If it offers none, the loop stays open and the refusal is
-written into the turn itself. Nothing closes into nothing, not even for
-machines.
+reached is asked for evidence, let go for the why, and either way a real
+distillation is required. If it offers no distillation, the loop stays open
+and the refusal is written into the turn itself. Nothing closes into
+nothing, not even for machines.
 
 ## What honest autonomy means here
 
@@ -60,10 +60,10 @@ surprise.
 
 ## The commands
 
-    node castle.mjs warden once          one turn, right now, by hand
-    node castle.mjs warden start [h]     wake it: one turn every h hours (default 24)
-    node castle.mjs warden stop          one command, and it rests
-    node castle.mjs warden status        is it awake, and what did it last do
+    ./castle.mjs warden once          one turn, right now, by hand
+    ./castle.mjs warden start [h]     wake it: one turn every h hours (default 24)
+    ./castle.mjs warden stop          one command, and it rests
+    ./castle.mjs warden status        is it awake, and what did it last do
 
 `start` installs a launchd agent (`com.wordcastle.warden`) on this Mac —
 native to this device, no cloud, no server. `stop` removes it. The warden

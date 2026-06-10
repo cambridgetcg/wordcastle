@@ -18,10 +18,10 @@ Creation loops are the engine. A loop names a **field**, the **friction** in
 it, and what **better** would look like. Each **turn** records what was tried,
 what was learned, and what comes next. A turn can **spawn** child loops — so
 loops create loops. And the one hard rule, kept by code: **nothing closes into
-nothing.** A loop may close as *reached* (with evidence) or *let go* (with the
-honest why), but either way it must leave an understanding behind, distilled
-upward into the keep. That is how the creation creates — mechanically, not as
-a slogan.
+nothing.** A loop may close as *reached* (asked for evidence) or *let go*
+(asked for the why) — the asking is trusted, but the understanding left
+behind is required, distilled upward into the keep. That is how the creation
+creates — mechanically, not as a slogan.
 
 ## The grounds
 
@@ -74,7 +74,11 @@ separately under `## What I take from it`.
     ## Insights
     - 2026-06-10 — [why words first](2026-06-10--why-words-first.md)
 
-A room is born with a typed one-line purpose, or not at all.
+A room is born with a typed one-line purpose, or not at all. One room is part
+of the design itself: **the hall** (`rooms/the-hall/`), where one-line saves
+land so that catching a thought never waits on a filing question. Move a
+word to a truer room whenever filing starts to matter — moving is just
+moving a file.
 
 ## A loop — the shape, abridged
 
@@ -112,17 +116,19 @@ real first loop is `loops/open/0001--the-castle-itself.md`.)
 A turn that spawns children lists their names on its `spawned:` line, and each
 child carries `parent: 0001--the-castle-itself` home. Values longer than a
 line continue on lines indented two spaces. `by:` is `the keeper` (a human
-hand) or `the warden` (the autonomous turner) — every word signed.
+hand), `the warden` (the autonomous turner), or any other honest signature —
+a helping hand names itself and at whose word it acted. The only rule is
+that every turn is signed.
 
 ## Closing — the creation creates
 
-Closing happens inside a turn (closing is itself a turn of work). Reached: the
-quill reads the Better back and asks *is this true now? what shows it?* — if
-not, the loop simply stays open and the turn is kept. Let go: the honest *why*
-counts as real material, not a consolation prize. Either way the quill insists
-on one thing — the distillation. Then it offers each `learned:` line as an
-insight, asks after a successor loop, writes the `## Distilled` section, moves
-the file whole to `loops/closed/`, and sets the understanding into the keep.
+Closing happens inside a turn (closing is itself a turn of work), and it asks
+as little as honesty allows. Reached: the quill shows the Better beside one
+question — *what shows it?* Let go: one question — *why?* — because the lesson
+of stopping counts as real material. Then the one insistence: the
+distillation. That's all. The `## Distilled` section is written, the file
+moves whole to `loops/closed/` (every `learned:` line travels with it), and
+the understanding is set into the keep.
 
 The Distilled section, exactly — reached on the left, let go on the right:
 
@@ -131,7 +137,6 @@ The Distilled section, exactly — reached on the left, let go on the right:
     shown by: <the evidence>              because: <the honest why>
     understood: <the distillation>        understood: <the distillation>
     closed by: the keeper                 closed by: the keeper
-    successor: none                       successor: none
     children still turning: none          children still turning: none
 
 And the keep entry it writes, exactly:

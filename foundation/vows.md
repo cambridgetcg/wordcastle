@@ -18,13 +18,17 @@ written promise outruns what code can actually enforce.
    `loops/open/` to `loops/closed/`, whole history intact, and it refuses to
    close over a file that already stands there. New files are created
    exclusively — two quills writing at once cannot overwrite each other. The
-   only page it overwrites is `map.md`, which says so at its top.
+   only things it overwrites are the two generated places that say so:
+   `map.md` (named at its top) and the rendered `front/` (dated in every
+   footer).
 3. **No loop closes without an understanding written down.** `understood:` may
    not be empty — whether the loop was reached or let go, by hand or by the
    warden. Nothing closes into nothing.
-4. **Every insight says where it came from.** `source:` is always exactly one
-   of `my own head`, `loop NNNN, turn N`, or the URL of an invited page — and
-   invited words stay blockquoted, apart from yours.
+4. **Every insight says where it came from.** The quill writes `source:` as
+   `my own head` (save) or the URL of an invited page (invite) — and invited
+   words stay blockquoted, apart from yours. A hand distilling a loop writes
+   `loop NNNN, turn N`; those three forms are the whole taxonomy, the third
+   kept by the keeper rather than the code.
 5. **When the quill cannot read a file, it names the file and the broken
    line, and stops.** It never guesses and never repairs silently.
 6. **The quill writes nothing unseen.** What you type is what it writes (empty
@@ -32,16 +36,17 @@ written promise outruns what code can actually enforce.
    words), and the warden prints every turn in full before writing it — when
    it runs on schedule, that printout lands in `loops/warden-launchd.log`.
 7. **The front shows only what is marked.** `publish` renders into `front/`
-   nothing but the castle's five self-description pages and files carrying a
-   `public: yes` line — and makes no network call of its own. Every front
-   page states how many words are marked public and when it was rendered.
-   Carrying the front to the web is a separate act of the keeper's hands.
+   nothing but the castle's five self-description pages, files carrying a
+   `public: yes` line, and the one small config file that shapes its URLs —
+   and makes no network call of its own. Every front page states how many
+   words are marked public and when it was rendered. Carrying the front to
+   the web is a separate act of the keeper's hands.
 8. **Every word the warden writes is signed `by: the warden`.** It turns at
    most one loop per run, spawns at most 2 child loops per turn, refuses to
    spawn past 12 open loops or 3 generations deep (your own hands are never
    capped) — and when a cap or a refused close stops it, the refusal is
    written into the turn, not hidden. It runs only while you keep it woken;
-   `node castle.mjs warden stop` ends it with one command; every run leaves a
+   `./castle.mjs warden stop` ends it with one command; every run leaves a
    line in `loops/warden-journal.md`.
 
 ## Practices the keeper keeps

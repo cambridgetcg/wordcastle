@@ -4,9 +4,10 @@ redrawn: 2026-06-10 by the quill — every other page is yours to edit; not this
 
 ## Rooms
 - the-castle — the castle itself — how this system works and why · 2 insights
+- the-hall — the open hall — one-line saves land here until filing matters · 1 insight
 
 ## Open loops
-- 0001--the-castle-itself — last turn 2026-06-10 (turn 2, by claude, at the keeper's word ("use cambridgetcg as the front for the castle"))
+- 0001--the-castle-itself — last turn 2026-06-10 (turn 3, by claude, at the keeper's word ("reduce process, increase trust, reduce friction"))
 
 ## The keep
 nothing distilled yet — the loops are still turning

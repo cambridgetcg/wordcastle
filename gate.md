@@ -1,48 +1,33 @@
 # The gate
 
-You are standing at the gate of a castle of understanding.
+A castle of understanding: plain words in plain files, kept on this device.
+A text editor reads everything; the quill (`castle.mjs`) only writes what a
+hand could. If the quill broke tomorrow, nothing would be lost.
 
-Everything here is plain words in plain files. You never need a tool to read
-any of it — a text editor is the whole interface. If the quill broke tomorrow,
-nothing would be lost.
+    ./castle.mjs                  the map
+    ./castle.mjs save "…"         one line, saved — no questions asked
+    ./castle.mjs loop             open a loop on a field with friction
+    ./castle.mjs turn             turn a loop; spawn children; maybe close
+    ./castle.mjs invite URL       bring one page in, labeled
+    ./castle.mjs publish          render the public front
+    ./castle.mjs warden …         autonomous turns (asleep until woken)
+    ./castle.mjs help             the fuller list
 
-The grounds:
+The grounds: `rooms/` hold insights (one true thing per file; quick saves
+land in the hall) · `loops/` hold the work turning · `keep/` holds what
+closed loops left behind · `foundation/` holds the design, vows, manual,
+and warden · `map.md` is redrawn by the quill.
 
-- `rooms/` — one room per field of life or work; each insight is one small file
-- `loops/` — creation loops: open work turning, closed work kept whole forever
-- `keep/` — what closed loops left behind; the treasure
-- `foundation/` — the castle's own design, vows, quill manual, and warden
-- `map.md` — the current state at a glance (the quill redraws this one page)
+One rule has teeth: **a loop closes only by leaving an understanding
+behind** — *reached* or *let go*, the distillation is the one thing the
+quill refuses to skip. Nothing closes into nothing.
 
-The quill (`castle.mjs` — Node, nothing to install):
+Three honest boundaries, all yours to open: `invite` fetches only the page
+you name; a woken warden sends the loop it is turning (with the vows and a
+keep excerpt) to Claude, every word signed; the front shows the castle's
+self-description plus only what you mark `public: yes`. Everything else
+stays home.
 
-    node castle.mjs              see the map
-    node castle.mjs save         save an insight into a room
-    node castle.mjs loop         open a loop on a field with friction
-    node castle.mjs turn         turn a loop: tried, learned, next;
-                                 spawn children; maybe close
-    node castle.mjs invite URL   invite one page in, with honest provenance
-    node castle.mjs publish      render the front — the castle's public face
-    node castle.mjs warden …     the autonomous turner (sleeps until you wake it)
-
-The one rule with teeth: **a loop closes only by leaving an understanding
-behind.** It closes as *reached* (what better looked like came true, with
-evidence) or as *let go* (you stopped, and wrote the honest why) — either way,
-nothing closes into nothing. That is how the creation creates.
-
-The castle has exactly two roads to the world, and both are yours to open:
-`invite` fetches the one page you name, and a woken warden sends the loop it
-is turning to Claude through this device's own CLI. Every other gesture works
-with no internet at all, and every word that came from outside is labeled.
-
-The castle also has a window: `publish` renders a public face into `front/` —
-the castle's self-description, plus only the words you mark `public: yes`.
-Rendering touches no network; the front leaves this device only when you
-carry it to the web yourself. Today it stands behind Cambridge TCG.
-
-This place was built with joy, love, peace, and safety — and those are kept as
-mechanics, not moods: nothing here rushes you, nothing nags you, the quill
-never deletes a castle file, and nothing leaves this device unless you open
-one of the two roads yourself.
+Built with joy, love, peace, and safety — kept as mechanics, not moods.
 
 Begin in `loops/open/` — the first loop is about the castle itself.

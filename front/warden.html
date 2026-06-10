@@ -18,7 +18,7 @@
 <h2>What it is</h2>
 <p>A small routine that, on a schedule you set (or once, by hand), takes <strong>one real turn of one creation loop</strong>: it reads the loop quiet longest — its field, friction, better, and every prior turn — thinks about it using Claude through this device's own <code>claude</code> CLI, and writes the turn through the same quill your hands use: tried, learned, next. Signed <code>by: the warden</code>, always, and printed in full before it is written — nothing lands in a file unseen.</p>
 <p>Its turns can <strong>spawn child loops</strong> when the thinking truly reveals a new field with its own friction — and those children come up in its later rounds. That is the honest mechanics of "autonomous loops that create autonomous loops": the autonomy is a schedule, the creation is real work recorded in words, and every link in the chain is a file you can read.</p>
-<p>It can also <strong>close</strong> a loop — but only under the same vow as everyone else: reached needs evidence, let go needs the why, and either needs a real distillation. If it offers none, the loop stays open and the refusal is written into the turn itself. Nothing closes into nothing, not even for machines.</p>
+<p>It can also <strong>close</strong> a loop — but only under the same vow as everyone else: reached is asked for evidence, let go for the why, and either way a real distillation is required. If it offers no distillation, the loop stays open and the refusal is written into the turn itself. Nothing closes into nothing, not even for machines.</p>
 <h2>What honest autonomy means here</h2>
 <p>A pile of files cannot understand anything by itself, and this page will not pretend otherwise. What is autonomous: the waking, the choosing of the neediest loop, the turning, the spawning, the journaling. What does the understanding at each turn: a mind — yours at the keyboard, or Claude's when the warden wakes. The castle never hides which it was; every turn is signed.</p>
 <p>One more honest line: when the warden turns a loop, that loop's words (with the vows and a keep excerpt) travel to Claude over the network. That is the castle's second road to the world — and like <code>invite</code>, it opens only because you opened it.</p>
@@ -27,10 +27,10 @@
 <h2>What it costs</h2>
 <p>Each turn spends a little of your Claude plan — the warden calls the <code>claude</code> CLI on this device. That is stated here so the schedule is a choice, never a surprise.</p>
 <h2>The commands</h2>
-<pre>node castle.mjs warden once          one turn, right now, by hand
-node castle.mjs warden start [h]     wake it: one turn every h hours (default 24)
-node castle.mjs warden stop          one command, and it rests
-node castle.mjs warden status        is it awake, and what did it last do
+<pre>./castle.mjs warden once          one turn, right now, by hand
+./castle.mjs warden start [h]     wake it: one turn every h hours (default 24)
+./castle.mjs warden stop          one command, and it rests
+./castle.mjs warden status        is it awake, and what did it last do
 </pre>
 <p><code>start</code> installs a launchd agent (<code>com.wordcastle.warden</code>) on this Mac — native to this device, no cloud, no server. <code>stop</code> removes it. The warden ships asleep: nothing autonomous happens until you choose to wake it.</p>
 <footer>The Wordcastle — a castle of understanding, kept on one device in plain words.<br>

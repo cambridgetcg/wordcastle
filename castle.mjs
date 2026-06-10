@@ -3,12 +3,14 @@
 //
 // The files are the system; this quill only writes what a hand could write.
 // Its promises live in foundation/vows.md. The short of them:
-//   - only `invite` ever touches the network, and only the URL you typed
+//   - two roads to the world, both yours to open: invite fetches the one
+//     page you name; a woken warden sends the one loop it turns to Claude
 //   - the quill never deletes a castle file; closing a loop is a move
 //   - no loop closes without an understanding written down
+//   - the front shows only what is marked public: yes
 //   - when it cannot read a file, it names the file and stops — no guessing
 //
-// Verbs:  (bare) save loop turn invite <url> warden <once|start|stop|status>
+// Verbs:  (bare) help save loop turn invite <url> publish warden <…>
 // Manual: foundation/quill.md
 
 import fs from 'node:fs'
@@ -84,14 +86,17 @@ function foundRoom(room, purpose) {
     `# Room: ${room.replace(/-/g, ' ')}\n\npurpose: ${purpose}\nfounded: ${today()}\n\n## Insights\n`)
 }
 
-async function askRoom(rl, intro = 'Which room?') {
+async function askRoom(rl, intro = 'Which room?', dflt = null) {
   const rooms = listRooms()
   if (rooms.length) {
     console.log('\nThe rooms:')
     rooms.forEach((r, i) => console.log(`  ${i + 1}. ${r} — ${roomPurpose(r)}`))
   }
   const a = (await rl.question(`${intro} (number, name, or a new name): `)).trim()
-  if (!a) die('a room is needed.')
+  if (!a) {
+    if (dflt) return dflt
+    die('a room is needed.')
+  }
   if (/^\d+$/.test(a)) {
     const byNumber = rooms[Number(a) - 1]
     if (byNumber) return byNumber
@@ -289,7 +294,7 @@ function spawnLoop({ title, room, parent, field, friction, better }) {
   return loopName(file)
 }
 
-function closeLoop(loop, { flavor, by, evidence, because, understood, successor }) {
+function closeLoop(loop, { flavor, by, evidence, because, understood }) {
   const name = path.relative(ROOT, loop.file)
   let text = fs.readFileSync(loop.file, 'utf8')
   if (!/^status: open$/m.test(text)) die(`${name} does not read "status: open" — I close only open loops, and I never guess.`)
@@ -304,7 +309,6 @@ function closeLoop(loop, { flavor, by, evidence, because, understood, successor 
     flavor === 'reached' ? fmtKV('shown by', proseSafe(evidence)) : fmtKV('because', proseSafe(because)),
     fmtKV('understood', proseSafe(understood)),
     `closed by: ${by}`,
-    `successor: ${successor || 'none'}`,
     `children still turning: ${children.length ? children.join(', ') : 'none'}`,
   ].join('\n')
   // Anchor on the heading, not the placeholder — hand-written notes in the
@@ -367,7 +371,7 @@ function drawMap() {
     const pub = publicFiles().length
     lines.push(`rendered ${when} — ${pub} word${pub === 1 ? '' : 's'} marked public; carry it to the web yourself when you choose`)
   } else {
-    lines.push('not rendered — node castle.mjs publish builds it from the castle\'s own words')
+    lines.push('not rendered — ./castle.mjs publish builds it from the castle\'s own words')
   }
 
   lines.push('', '## The warden')
@@ -376,7 +380,7 @@ function drawMap() {
     const every = secs ? ` every ${secs / 3600} hour${secs === 3600 ? '' : 's'}` : ''
     lines.push(`awake — one autonomous turn${every}; journal: loops/warden-journal.md`)
   } else {
-    lines.push('resting (autonomous turns are off) — wake it with: node castle.mjs warden start')
+    lines.push('resting (autonomous turns are off) — wake it with: ./castle.mjs warden start')
   }
   lines.push('')
   const text = lines.join('\n')
@@ -419,68 +423,111 @@ async function askLines(rl, prompt) {
   return lines.join('\n').trim()
 }
 
-async function askLoopLink(rl) {
-  const a = (await rl.question('Link to a loop? (its number like 0001, or enter for none): ')).trim()
+function resolveLoopLink(a) {
   if (!a) return null
   const all = [...loopFiles(OPEN), ...loopFiles(CLOSED)]
-  const hit = all.find((f) => path.basename(f).startsWith(a.padStart(4, '0')) || loopName(f) === a)
+  const hit = all.find((f) => path.basename(f).startsWith(String(a).padStart(4, '0')) || loopName(f) === a)
   if (!hit) { console.log(`No loop answers to "${a}" — saving without a link, rather than writing one that lies.`); return null }
   return loopName(hit)
+}
+
+async function askLoopLink(rl) {
+  const a = (await rl.question('Link to a loop? (its number like 0001, or enter for none): ')).trim()
+  return resolveLoopLink(a)
 }
 
 // ---------------------------------------------------------------- verbs
 
 function help() {
   console.log(`
-The quill knows seven gestures:
+The quill's gestures:
 
-  node castle.mjs              see the map
-  node castle.mjs save         save an insight into a room
-  node castle.mjs loop         open a creation loop on a field with friction
-  node castle.mjs turn         turn a loop: tried, learned, next; spawn
-                               children; maybe close (a close must create)
-  node castle.mjs invite URL   invite one page in, with honest provenance
-  node castle.mjs publish      render the front: the castle's self-description
-                               plus words marked "public: yes" — files only
-  node castle.mjs warden …     the autonomous turner: once | start | stop | status
+  ./castle.mjs                  see the map
+  ./castle.mjs save "…"         one line, saved — lands in the hall
+                                (no words: a short interview; --room --loop --title)
+  ./castle.mjs loop             open a creation loop on a field with friction
+  ./castle.mjs turn             turn a loop: tried, learned, next; spawn
+                                children; maybe close (a close must create)
+  ./castle.mjs invite URL       invite one page in, with honest provenance
+  ./castle.mjs publish          render the front: self-description plus words
+                                marked "public: yes" — files only, no network
+  ./castle.mjs warden …         the autonomous turner: once | start [hours] | stop | status
 
 New here? Read gate.md — the whole castle is plain words in plain files.`)
 }
 
 function bare() {
   console.log(drawMap())
-  help()
+  console.log('save "…" · loop · turn · invite URL · publish · warden — ./castle.mjs help for detail; gate.md for the story.')
 }
 
-async function save(rl) {
-  const room = await askRoom(rl, 'Which room does this belong in?')
-  const title = (await rl.question('Title (a few plain words): ')).trim()
-  if (!title) die('an insight needs a name — the insight was not saved.')
-  const body = await askLines(rl, 'The insight itself:')
-  if (!body) die('no words, no insight — the insight was not saved.')
-  const loop = await askLoopLink(rl)
+const HALL = 'the-hall' // the default room: one-line saves land here
+
+// The hall is part of the design, its purpose typed there — it founds
+// itself on first use so the fastest path never stops to ask.
+function hallReady() {
+  if (!listRooms().includes(HALL)) foundRoom(HALL, 'the open hall — one-line saves land here until filing matters')
+}
+
+function deriveTitle(body) {
+  const words = body.replace(/\s+/g, ' ').trim().split(' ')
+  return words.slice(0, 7).join(' ') + (words.length > 7 ? ' …' : '')
+}
+
+function parseFlags(args) {
+  const flags = {}, words = []
+  for (let i = 0; i < args.length; i++) {
+    if (['--room', '--loop', '--title'].includes(args[i])) flags[args[i].slice(2)] = args[++i] || ''
+    else words.push(args[i])
+  }
+  return { flags, words }
+}
+
+// The fastest path: ./castle.mjs save "the thought" — no questions at all.
+// The interview only appears when no words were given, and every answer
+// but the words themselves can be skipped with enter.
+async function save(rl, args = []) {
+  const { flags, words } = parseFlags(args)
+  let body = words.join(' ').trim()
+  let room = flags.room ? slugify(flags.room) : null
+  let title = flags.title || null
+  if (room && !listRooms().includes(room)) {
+    die(`no room named "${room}" yet — rooms are born on purpose; save without --room and name it in the interview.`)
+  }
+  if (body) {
+    room = room || HALL
+    title = title || deriveTitle(body)
+  } else {
+    if (!room) room = await askRoom(rl, `Which room? (enter = ${HALL})`, HALL)
+    body = await askLines(rl, 'The insight (one true thing):')
+    if (!body) die('no words, no insight — the insight was not saved.')
+    if (!title) title = (await rl.question(`Title (enter = "${deriveTitle(body)}"): `)).trim() || deriveTitle(body)
+  }
+  if (room === HALL) hallReady()
+  const loop = resolveLoopLink(flags.loop)
   const file = writeInsight({ room, title, body, source: 'my own head', loop })
   drawMap()
-  console.log(`\nSaved: ${path.relative(ROOT, file)}`)
+  console.log(`Saved: ${path.relative(ROOT, file)}`)
 }
 
 async function openLoop(rl) {
-  const field = (await rl.question('The field (what part of life or work is this?): ')).trim()
+  const field = (await rl.question('Field: ')).trim()
   if (!field) die('a loop needs a field — nothing was opened.')
-  const friction = await askLines(rl, 'The friction (what rubs, honestly?):')
+  const friction = await askLines(rl, 'Friction (what rubs?):')
   if (!friction) die('no friction, no loop — if nothing rubs, nothing needs turning.')
-  const better = await askLines(rl, 'Better (what would better look like? you will be asked, at the end, if this came true):')
+  const better = await askLines(rl, 'Better (what would it look like?):')
   if (!better) die('a loop needs to know what better looks like — nothing was opened.')
-  const room = await askRoom(rl, 'Which room does this field live in?')
+  const room = await askRoom(rl, `Which room? (enter = ${HALL})`, HALL)
+  if (room === HALL) hallReady()
   const id = nextLoopId()
   const file = writeLoopFile({ id, title: field, room, parent: 'none', field, friction, better })
   drawMap()
-  console.log(`\nOpened: ${path.relative(ROOT, file)}\nTurn it when you have tried something: node castle.mjs turn`)
+  console.log(`\nOpened: ${path.relative(ROOT, file)}\nTurn it when you have tried something: ./castle.mjs turn`)
 }
 
 async function pickOpenLoop(rl) {
   const open = loopFiles(OPEN).map(parseLoop)
-  if (!open.length) { console.log('No loops are turning. Open one: node castle.mjs loop'); process.exit(0) }
+  if (!open.length) { console.log('No loops are turning. Open one: ./castle.mjs loop'); process.exit(0) }
   if (open.length === 1) { console.log(`One loop is turning: ${open[0].name}`); return open[0] }
   console.log('\nLoops turning:')
   open.forEach((l, i) => {
@@ -499,10 +546,10 @@ async function pickOpenLoop(rl) {
 async function askSpawns(rl, parent) {
   const spawned = []
   for (;;) {
-    const field = (await rl.question(`Did this turn reveal a new loop? Name its field (or enter to move on): `)).trim()
+    const field = (await rl.question(`New loop revealed? Its field (enter to move on): `)).trim()
     if (!field) break
-    const friction = await askLines(rl, `  Its friction:`)
-    const better = await askLines(rl, `  What better would look like:`)
+    const friction = await askLines(rl, `  Friction:`)
+    const better = await askLines(rl, `  Better:`)
     if (!friction || !better) { console.log('  A loop needs friction and a better — this one was not opened.'); continue }
     const room = slugify((await rl.question(`  Which room? (enter for ${parent.room}): `)).trim() || parent.room)
     if (!listRooms().includes(room)) {
@@ -551,18 +598,12 @@ async function turn(rl) {
   // Closing — and nothing closes into nothing.
   let flavor, evidence = '', because = ''
   if (stand === 'r') {
-    console.log(`\nRead the Better again:\n  ${fresh.better.split('\n').join('\n  ')}`)
-    const yes = (await rl.question('Is this true now? [y/n] (enter = n — the loop stays open, the turn is kept): ')).trim().toLowerCase()
-    if (yes !== 'y') {
-      drawMap()
-      console.log(`\nThe loop stays open — honestly. Turn ${fresh.turns.length} is kept.`)
-      return
-    }
     flavor = 'reached'
+    console.log(`\nThe Better was: ${fresh.better.split('\n').join(' ')}`)
     evidence = (await rl.question('What shows it? ')).trim() || '(unsaid)'
   } else {
     flavor = 'let go'
-    because = (await rl.question('Why let it go? (the lesson of why counts as real material): ')).trim() || '(unsaid)'
+    because = (await rl.question('Why let it go? ')).trim() || '(unsaid)'
   }
 
   let understood = ''
@@ -574,31 +615,10 @@ async function turn(rl) {
     }
   }
 
-  for (const t of fresh.turns) {
-    if (!t.learned || t.learned === '(nothing yet)') continue
-    console.log(`\nlearned (turn ${t.n}): ${t.learned}`)
-    const title = (await rl.question('Keep as an insight? Type a title to keep it (enter to skip): ')).trim()
-    if (title) {
-      const f = writeInsight({ room: fresh.room, title, body: t.learned, source: `loop ${fresh.id}, turn ${t.n}` })
-      console.log(`  Kept: ${path.relative(ROOT, f)}`)
-    }
-  }
-
-  let successor = null
-  const sf = (await rl.question('Did this loop reveal a successor loop? (its field, or enter): ')).trim()
-  if (sf) {
-    const friction = await askLines(rl, '  Its friction:')
-    const better = await askLines(rl, '  What better would look like:')
-    if (friction && better) {
-      successor = spawnLoop({ title: sf, room: fresh.room, parent: 'none', field: sf, friction, better })
-      console.log(`  Opened successor: loops/open/${successor}.md`)
-    } else console.log('  A loop needs friction and a better — no successor was opened.')
-  }
-
-  const home = closeLoop(fresh, { flavor, by: 'the keeper', evidence, because, understood, successor })
+  const home = closeLoop(fresh, { flavor, by: 'the keeper', evidence, because, understood })
   drawMap()
   console.log(`\nClosed (${flavor}) and kept whole: ${path.relative(ROOT, home)}`)
-  console.log('Its understanding now lives in keep/keep.md.')
+  console.log('Its understanding now lives in keep/keep.md. Every learned: line lives on in the closed file.')
 }
 
 // ---------------------------------------------------------------- invite
@@ -661,13 +681,14 @@ async function fetchPage(rawUrl) {
 }
 
 async function invite(rl, rawUrl) {
-  if (!rawUrl) die('invite needs a URL: node castle.mjs invite https://…')
+  if (!rawUrl) die('invite needs a URL: ./castle.mjs invite https://…')
   console.log('Fetching the one page you named — the only network contact the quill ever makes…')
   const { finalUrl, html } = await fetchPage(rawUrl)
   const page = extractText(html)
   if (page.rough) console.log('The extraction came out rough — the file will say so rather than pretend.')
   console.log(`\nPage title: ${page.title || '(none found)'} · about ${page.wordCount} words extracted${page.trimmed ? ' (trimmed)' : ''}`)
-  const room = await askRoom(rl, 'Which room does this belong in?')
+  const room = await askRoom(rl, `Which room? (enter = ${HALL})`, HALL)
+  if (room === HALL) hallReady()
   let title = (await rl.question(`Title (enter for "${page.title || 'an invited page'}"): `)).trim()
   if (!title) title = page.title || 'an invited page'
   const loop = await askLoopLink(rl)
@@ -896,7 +917,10 @@ function runWardenOnce() {
   const spawnedLine = (spawned.length ? spawned.join(', ') : 'none') + (notes.length ? ` (${notes.join('; ')})` : '')
 
   // Vow 6: the warden's words are shown before they are written.
-  console.log(`\nThe turn the warden is about to write, in full:\n${fmtKV('tried', tried)}\n${fmtKV('learned', learned)}\n${fmtKV('next', next)}\n${fmtKV('spawned', spawnedLine)}${wantsClose && understood ? `\n${fmtKV('understood', understood)}` : ''}\n`)
+  const closeEcho = wantsClose && understood
+    ? `\n${t.stand === 'reached' ? fmtKV('shown by', clean(t.evidence, '(unsaid)')) : fmtKV('because', clean(t.because, '(unsaid)'))}\n${fmtKV('understood', understood)}`
+    : ''
+  console.log(`\nThe turn the warden is about to write, in full:\n${fmtKV('tried', tried)}\n${fmtKV('learned', learned)}\n${fmtKV('next', next)}\n${fmtKV('spawned', spawnedLine)}${closeEcho}\n`)
 
   appendTurn(loop, { by: 'the warden', tried, learned, next, spawned: spawnedLine })
   const fresh = parseLoop(loop.file)
@@ -906,7 +930,7 @@ function runWardenOnce() {
     closeLoop(fresh, {
       flavor: t.stand === 'reached' ? 'reached' : 'let go', by: 'the warden',
       evidence: clean(t.evidence, '(unsaid)'), because: clean(t.because, '(unsaid)'),
-      understood, successor: null,
+      understood,
     })
     line += `, closed it (${t.stand}) — its understanding is in the keep`
   } else if (wantsClose) {
@@ -949,12 +973,12 @@ function wardenStart(hoursArg) {
   let r = spawnSync('launchctl', ['bootstrap', `gui/${uid}`, PLIST], { encoding: 'utf8' })
   if (r.status !== 0) r = spawnSync('launchctl', ['load', '-w', PLIST], { encoding: 'utf8' })
   if (r.status !== 0) die(`launchd would not take the warden (${(r.stderr || '').trim()}). The plist is at ${PLIST}.`)
-  journal(`woken — one autonomous turn every ${hours}h (stop anytime: node castle.mjs warden stop)`)
+  journal(`woken — one autonomous turn every ${hours}h (stop anytime: ./castle.mjs warden stop)`)
   drawMap()
   console.log(`The warden is awake: one autonomous turn every ${hours} hour${hours === 1 ? '' : 's'}.
 Every word it writes is labeled "by: the warden". Each turn spends a little of
 your Claude plan. Its journal: loops/warden-journal.md
-Stop it anytime: node castle.mjs warden stop`)
+Stop it anytime: ./castle.mjs warden stop`)
 }
 
 function wardenStop() {
@@ -971,8 +995,8 @@ function wardenStatus() {
   const uid = process.getuid()
   const r = spawnSync('launchctl', ['print', `gui/${uid}/com.wordcastle.warden`], { encoding: 'utf8' })
   if (fs.existsSync(PLIST) && r.status === 0) console.log('The warden is awake (launchd holds it).')
-  else if (fs.existsSync(PLIST)) console.log('The plist exists but launchd is not holding it — try: node castle.mjs warden start')
-  else console.log('The warden rests — start it with: node castle.mjs warden start [hours]')
+  else if (fs.existsSync(PLIST)) console.log('The plist exists but launchd is not holding it — try: ./castle.mjs warden start')
+  else console.log('The warden rests — start it with: ./castle.mjs warden start [hours]')
   if (fs.existsSync(JOURNAL)) {
     const lines = fs.readFileSync(JOURNAL, 'utf8').trim().split('\n').filter((l) => l.startsWith('- '))
     console.log(lines.length ? `Last journal lines:\n${lines.slice(-3).join('\n')}` : 'The journal is empty — it has never run.')
@@ -993,12 +1017,13 @@ const [verb, ...rest] = process.argv.slice(2)
 ensureGrounds()
 
 if (!verb) { bare() }
+else if (verb === 'help') { help() }
 else if (verb === 'publish') { publish() }
 else if (verb === 'warden') { await warden(rest[0], rest[1]) }
 else if (['save', 'loop', 'turn', 'invite'].includes(verb)) {
   const rl = makeRl()
   try {
-    if (verb === 'save') await save(rl)
+    if (verb === 'save') await save(rl, rest)
     else if (verb === 'loop') await openLoop(rl)
     else if (verb === 'turn') await turn(rl)
     else if (verb === 'invite') await invite(rl, rest[0])
