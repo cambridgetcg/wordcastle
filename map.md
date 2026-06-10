@@ -3,7 +3,7 @@
 redrawn: 2026-06-10 by the quill — every other page is yours to edit; not this one
 
 ## Rooms
-- the-castle — the castle itself — how this system works and why · 1 insight
+- the-castle — the castle itself — how this system works and why · 2 insights
 
 ## Open loops
 - 0001--the-castle-itself — last turn 2026-06-10 (turn 1, by the keeper)
@@ -12,4 +12,4 @@ redrawn: 2026-06-10 by the quill — every other page is yours to edit; not this
 nothing distilled yet — the loops are still turning
 
 ## The warden
-resting (autonomous turns are off) — ignite with: node castle.mjs warden start
+resting (autonomous turns are off) — wake it with: node castle.mjs warden start

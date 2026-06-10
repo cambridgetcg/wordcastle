@@ -77,8 +77,10 @@ function roomInsightCount(room) {
 
 function foundRoom(room, purpose) {
   const dir = path.join(ROOMS, room)
+  const f = path.join(dir, 'room.md')
+  if (fs.existsSync(f)) die(`rooms/${room}/room.md already stands — I won't overwrite a room's ledger.`)
   fs.mkdirSync(dir, { recursive: true })
-  fs.writeFileSync(path.join(dir, 'room.md'),
+  fs.writeFileSync(f,
     `# Room: ${room.replace(/-/g, ' ')}\n\npurpose: ${purpose}\nfounded: ${today()}\n\n## Insights\n`)
 }
 
@@ -89,9 +91,12 @@ async function askRoom(rl, intro = 'Which room?') {
     rooms.forEach((r, i) => console.log(`  ${i + 1}. ${r} — ${roomPurpose(r)}`))
   }
   const a = (await rl.question(`${intro} (number, name, or a new name): `)).trim()
-  if (!a) die('a room is needed — nothing was saved.')
-  const byNumber = rooms[Number(a) - 1]
-  if (byNumber) return byNumber
+  if (!a) die('a room is needed.')
+  if (/^\d+$/.test(a)) {
+    const byNumber = rooms[Number(a) - 1]
+    if (byNumber) return byNumber
+    die(`no room answers to number ${a}.`)
+  }
   const slug = slugify(a)
   if (rooms.includes(slug)) return slug
   const purpose = (await rl.question(`"${slug}" would be a new room. A room is born with a purpose or not at all.\nOne line — what is this room for? `)).trim()
@@ -101,15 +106,17 @@ async function askRoom(rl, intro = 'Which room?') {
   return slug
 }
 
-function freshInsightPath(room, title) {
-  const dir = path.join(ROOMS, room)
-  let name = `${today()}--${slugify(title)}.md`
-  for (let n = 2; fs.existsSync(path.join(dir, name)); n++) name = `${today()}--${slugify(title)}-${n}.md`
-  return path.join(dir, name)
+// Exclusive create ('wx') so two quills writing at once can never overwrite
+// each other — on collision the suffix simply moves to the next number.
+function createExclusive(dir, baseName, text) {
+  let name = `${baseName}.md`
+  for (let n = 2; ; n++) {
+    try { fs.writeFileSync(path.join(dir, name), text, { flag: 'wx' }); return path.join(dir, name) }
+    catch (e) { if (e.code !== 'EEXIST') throw e; name = `${baseName}-${n}.md` }
+  }
 }
 
 function writeInsight({ room, title, body, source, loop, fetchedLine, takeBody }) {
-  const file = freshInsightPath(room, title)
   let text = `# ${title}\n\nsaved: ${today()}\nroom: ${room}\nsource: ${source}\n`
   if (fetchedLine) text += `fetched: ${fetchedLine}\n`
   if (loop) text += `loop: ${loop}\n`
@@ -119,10 +126,11 @@ function writeInsight({ room, title, body, source, loop, fetchedLine, takeBody }
   } else {
     text += `${body}\n`
   }
-  fs.writeFileSync(file, text)
+  const file = createExclusive(path.join(ROOMS, room), `${today()}--${slugify(title)}`, text)
   const ledger = path.join(ROOMS, room, 'room.md')
   if (fs.existsSync(ledger)) {
-    fs.appendFileSync(ledger, `- ${today()} — [${title}](${path.basename(file)})\n`)
+    const safeTitle = title.replace(/\\/g, '\\\\').replace(/([[\]])/g, '\\$1')
+    fs.appendFileSync(ledger, `- ${today()} — [${safeTitle}](${path.basename(file)})\n`)
   }
   return file
 }
@@ -157,10 +165,11 @@ function parseLoop(file) {
     return l ? l.slice(key.length + 2).trim() : null
   }
   const titleLine = lines.find((l) => l.startsWith('# Loop '))
-  need('# Loop NNNN — title', titleLine)
+  need('# Loop NNNN — title', titleLine && /^# Loop \d{4} [—-] .+/.test(titleLine) ? titleLine : null)
   need('opened:', header('opened'))
   need('status:', header('status'))
   need('room:', header('room'))
+  need('parent:', header('parent'))
   const section = (heading) => {
     const i = lines.findIndex((l) => l === `## ${heading}`)
     need(`## ${heading}`, i >= 0)
@@ -178,18 +187,28 @@ function parseLoop(file) {
     if (line === '## Turns') { inTurns = true; continue }
     if (inTurns && line.startsWith('## ')) break
     if (!inTurns) continue
-    const t = line.match(/^### Turn (\d+) — (\d{4}-\d{2}-\d{2})/)
-    if (t) { cur = { n: +t[1], date: t[2], by: 'the keeper', tried: '', learned: '', next: '', spawned: '', _k: null }; turns.push(cur); continue }
+    if (line.startsWith('### ')) {
+      // The long dash or a plain hyphen both count — a hand-typed heading
+      // that still doesn't fit stops the quill rather than vanishing.
+      const t = line.match(/^### Turn (\d+) [—-]+ (\d{4}-\d{2}-\d{2})/)
+      if (!t) die(`I can't read ${name} — the heading "${line}" is not "### Turn N — YYYY-MM-DD". Mend it and try again; I never guess.`)
+      cur = { n: +t[1], date: t[2], by: '', tried: '', learned: '', next: '', spawned: '', _k: null }
+      turns.push(cur)
+      continue
+    }
     if (!cur) continue
     const kv = line.match(/^(by|tried|learned|next|spawned): ?(.*)$/)
     if (kv) { cur._k = kv[1]; cur[kv[1]] = kv[2]; continue }
     if (line.startsWith('  ') && cur._k) cur[cur._k] += '\n' + line.slice(2)
   }
-  turns.forEach((t) => delete t._k)
+  for (const t of turns) {
+    if (!t.by) die(`I can't read ${name} — turn ${t.n} has no "by:" line, and every word here is signed. Mend it and try again.`)
+    delete t._k
+  }
 
   return {
     file, name: loopName(file), id: path.basename(file).slice(0, 4),
-    title: titleLine.replace(/^# Loop \d{4} — /, ''),
+    title: titleLine.replace(/^# Loop \d{4} [—-]+ /, ''),
     opened: header('opened'), status: header('status'),
     room: header('room'), parent: header('parent') || 'none',
     field: section('Field'), friction: section('Friction'), better, turns,
@@ -206,9 +225,13 @@ function loopDepth(loop, all) {
   return depth
 }
 
+// A prose line of yours that begins with '#' is indented two spaces when
+// written, so it can never be mistaken for one of the quill's headings.
+const proseSafe = (s) => String(s).split('\n').map((l) => (l.startsWith('#') ? '  ' + l : l)).join('\n')
+
 function writeLoopFile({ id, title, room, parent, field, friction, better }) {
-  const file = path.join(OPEN, `${id}--${slugify(title)}.md`)
-  fs.writeFileSync(file, `# Loop ${id} — ${title}
+  field = proseSafe(field); friction = proseSafe(friction); better = proseSafe(better)
+  const text = `# Loop ${id} — ${title}
 
 opened: ${today()}
 status: open
@@ -230,7 +253,13 @@ ${better}
 
 ## Distilled
 (empty until the loop closes)
-`)
+`
+  const file = path.join(OPEN, `${id}--${slugify(title)}.md`)
+  try { fs.writeFileSync(file, text, { flag: 'wx' }) }
+  catch (e) {
+    if (e.code !== 'EEXIST') throw e
+    die(`loops/open/${path.basename(file)} already stands — another quill may be writing; try again.`)
+  }
   return file
 }
 
@@ -240,14 +269,14 @@ function appendTurn(loop, { by, tried, learned, next, spawned }) {
   const block = [
     `### Turn ${loop.turns.length + 1} — ${today()}`,
     `by: ${by}`,
-    fmtKV('tried', tried),
-    fmtKV('learned', learned),
-    fmtKV('next', next),
+    fmtKV('tried', proseSafe(tried)),
+    fmtKV('learned', proseSafe(learned)),
+    fmtKV('next', proseSafe(next)),
     fmtKV('spawned', spawned),
   ].join('\n')
-  const at = text.indexOf('## Distilled')
+  const at = text.lastIndexOf('\n## Distilled')
   if (at === -1) die(`I can't write to ${path.relative(ROOT, loop.file)} — its "## Distilled" heading is gone.`)
-  fs.writeFileSync(loop.file, text.slice(0, at) + block + '\n\n' + text.slice(at))
+  fs.writeFileSync(loop.file, text.slice(0, at + 1) + block + '\n\n' + text.slice(at + 1))
 }
 
 function openChildrenOf(name) {
@@ -261,22 +290,33 @@ function spawnLoop({ title, room, parent, field, friction, better }) {
 }
 
 function closeLoop(loop, { flavor, by, evidence, because, understood, successor }) {
+  const name = path.relative(ROOT, loop.file)
   let text = fs.readFileSync(loop.file, 'utf8')
+  if (!/^status: open$/m.test(text)) die(`${name} does not read "status: open" — I close only open loops, and I never guess.`)
+  const home = path.join(CLOSED, path.basename(loop.file))
+  if (fs.existsSync(home)) die(`loops/closed/${path.basename(home)} already stands — I won't overwrite a closed loop's history.`)
   const closedStatus = flavor === 'reached' ? 'closed (reached)' : 'closed (let go)'
   text = text.replace(/^status: open$/m, `status: ${closedStatus}`)
   text = text.replace(/^(opened: .*)$/m, `$1\nclosed: ${today()}`)
   const children = openChildrenOf(loop.name).map((l) => l.name)
   const distilled = [
     `closed as: ${flavor}`,
-    flavor === 'reached' ? fmtKV('shown by', evidence) : fmtKV('because', because),
-    fmtKV('understood', understood),
+    flavor === 'reached' ? fmtKV('shown by', proseSafe(evidence)) : fmtKV('because', proseSafe(because)),
+    fmtKV('understood', proseSafe(understood)),
     `closed by: ${by}`,
     `successor: ${successor || 'none'}`,
     `children still turning: ${children.length ? children.join(', ') : 'none'}`,
   ].join('\n')
-  text = text.replace('## Distilled\n(empty until the loop closes)', `## Distilled\n${distilled}`)
+  // Anchor on the heading, not the placeholder — hand-written notes in the
+  // Distilled section are kept below the close, never thrown away.
+  const at = text.lastIndexOf('\n## Distilled')
+  if (at === -1) die(`I can't close ${name} — its "## Distilled" heading is gone.`)
+  const headEnd = text.indexOf('\n', at + 1)
+  const cut = headEnd === -1 ? text.length : headEnd + 1
+  const existing = text.slice(cut).replace('(empty until the loop closes)', '').trim()
+  const head = text.slice(0, cut)
+  text = head + (head.endsWith('\n') ? '' : '\n') + distilled + (existing ? '\n\n' + existing : '') + '\n'
   fs.writeFileSync(loop.file, text)
-  const home = path.join(CLOSED, path.basename(loop.file))
   fs.renameSync(loop.file, home) // a move, never a delete
   addKeepEntry(loop, flavor, understood)
   return home
@@ -323,9 +363,11 @@ function drawMap() {
 
   lines.push('', '## The warden')
   if (fs.existsSync(PLIST)) {
-    lines.push('installed — turning loops on its own; journal: loops/warden-journal.md')
+    const secs = Number((fs.readFileSync(PLIST, 'utf8').match(/<key>StartInterval<\/key><integer>(\d+)<\/integer>/) || [])[1])
+    const every = secs ? ` every ${secs / 3600} hour${secs === 3600 ? '' : 's'}` : ''
+    lines.push(`awake — one autonomous turn${every}; journal: loops/warden-journal.md`)
   } else {
-    lines.push('resting (autonomous turns are off) — ignite with: node castle.mjs warden start')
+    lines.push('resting (autonomous turns are off) — wake it with: node castle.mjs warden start')
   }
   lines.push('')
   const text = lines.join('\n')
@@ -402,9 +444,9 @@ function bare() {
 async function save(rl) {
   const room = await askRoom(rl, 'Which room does this belong in?')
   const title = (await rl.question('Title (a few plain words): ')).trim()
-  if (!title) die('an insight needs a name — nothing was saved.')
+  if (!title) die('an insight needs a name — the insight was not saved.')
   const body = await askLines(rl, 'The insight itself:')
-  if (!body) die('no words, no insight — nothing was saved.')
+  if (!body) die('no words, no insight — the insight was not saved.')
   const loop = await askLoopLink(rl)
   const file = writeInsight({ room, title, body, source: 'my own head', loop })
   drawMap()
@@ -435,7 +477,10 @@ async function pickOpenLoop(rl) {
     console.log(`  ${i + 1}. ${l.name} — ${last ? `last turn ${last.date}` : 'no turns yet'}`)
   })
   const a = (await rl.question('Which loop? (number or name): ')).trim()
-  const pick = open[Number(a) - 1] || open.find((l) => l.name === a || l.id === a.padStart(4, '0'))
+  if (/^\d+$/.test(a) && open[Number(a) - 1] && a.length < 4) return open[Number(a) - 1]
+  const matches = open.filter((l) => l.name === a || l.id === a.padStart(4, '0'))
+  if (matches.length > 1) die(`two loops answer to "${a}" (${matches.map((l) => l.name).join(', ')}) — give the full name; I never guess.`)
+  const pick = matches[0] || open[Number(a) - 1]
   if (!pick) die(`no open loop answers to "${a}".`)
   return pick
 }
@@ -448,13 +493,13 @@ async function askSpawns(rl, parent) {
     const friction = await askLines(rl, `  Its friction:`)
     const better = await askLines(rl, `  What better would look like:`)
     if (!friction || !better) { console.log('  A loop needs friction and a better — this one was not opened.'); continue }
-    const room = (await rl.question(`  Which room? (enter for ${parent.room}): `)).trim() || parent.room
+    const room = slugify((await rl.question(`  Which room? (enter for ${parent.room}): `)).trim() || parent.room)
     if (!listRooms().includes(room)) {
       const purpose = (await rl.question(`  "${room}" is new. One line — what is this room for? `)).trim()
       if (!purpose) { console.log('  No purpose, no room — the loop was not opened.'); continue }
-      foundRoom(slugify(room), purpose)
+      foundRoom(room, purpose)
     }
-    const name = spawnLoop({ title: field, room: slugify(room), parent: parent.name, field, friction, better })
+    const name = spawnLoop({ title: field, room, parent: parent.name, field, friction, better })
     console.log(`  Spawned: loops/open/${name}.md`)
     spawned.push(name)
   }
@@ -468,7 +513,7 @@ async function turn(rl) {
   if (last) console.log(`\nLast turn (${last.date}, by ${last.by}):\n  learned: ${last.learned}\n  next: ${last.next}`)
 
   let tried
-  if (last && last.next && last.next !== '(open)') {
+  if (last && last.next && last.next !== '(open)' && !rl.dry()) {
     console.log(`\nWhat did you try? (enter alone takes up where you left off: "${last.next}")`)
     tried = await askLines(rl, '')
     if (!tried) tried = last.next
@@ -631,16 +676,14 @@ async function invite(rl, rawUrl) {
 
 function journal(line) {
   if (!fs.existsSync(JOURNAL)) {
-    fs.writeFileSync(JOURNAL, `# The warden's journal\n\nOne line per autonomous run — what was turned, or why nothing was.\nThe warden writes here every time it wakes; silence here means it did not wake.\n\n`)
+    fs.writeFileSync(JOURNAL, `# The warden's journal\n\nOne line per autonomous run — what was turned, or why nothing was.\nThe warden writes here every time it wakes; a missing line means it did not\nwake, or was cut down before it could write (loops/warden-launchd.log would say).\n\n`)
   }
   fs.appendFileSync(JOURNAL, `- ${now()} — ${line}\n`)
 }
 
 function findClaude() {
   const r = spawnSync('which', ['claude'], { encoding: 'utf8' })
-  const p = (r.stdout || '').trim()
-  if (!p) die('the warden needs the `claude` CLI on this device, and `which claude` found nothing.')
-  return p
+  return (r.stdout || '').trim() || null
 }
 
 function wardenPrompt(loop, vows) {
@@ -678,6 +721,11 @@ Rules you must keep:
 
 function runWardenOnce() {
   ensureGrounds()
+  const claude = findClaude()
+  if (!claude) {
+    journal('woke but found no `claude` CLI on this device — nothing was written')
+    die('the warden needs the `claude` CLI on this device, and `which claude` found nothing.')
+  }
   const open = loopFiles(OPEN).map(parseLoop)
   if (!open.length) { journal('woke, found no loops turning, rested again'); console.log('No loops are turning — the warden rests.'); return }
   // Turn the loop most in need: the one quiet longest.
@@ -686,7 +734,7 @@ function runWardenOnce() {
   const vows = fs.existsSync(VOWS) ? fs.readFileSync(VOWS, 'utf8') : '(vows.md is missing)'
 
   console.log(`The warden turns ${loop.name} (quiet since ${lastDate(loop)})…`)
-  const res = spawnSync(findClaude(), ['-p', wardenPrompt(loop, vows)], { encoding: 'utf8', timeout: 300000 })
+  const res = spawnSync(claude, ['-p', wardenPrompt(loop, vows)], { encoding: 'utf8', timeout: 300000 })
   if (res.error || res.status !== 0) {
     journal(`tried to turn ${loop.name} but claude failed (${res.error?.message || `exit ${res.status}`}) — nothing was written`)
     die(`the warden's claude call failed (${res.error?.message || `exit ${res.status}`}) — nothing was written.`)
@@ -695,13 +743,18 @@ function runWardenOnce() {
   try {
     t = JSON.parse(res.stdout.trim().replace(/^```(json)?\n?/, '').replace(/\n?```$/, ''))
   } catch {
+    console.error('The answer, raw, so nothing is hidden:\n' + res.stdout)
     journal(`turned ${loop.name} but the answer was not readable JSON — nothing was written`)
-    die('the warden got an answer it could not read — nothing was written. (The raw answer was shown above.)')
+    die('the warden got an answer it could not read — nothing was written. The raw answer is above.')
   }
   const clean = (v, fallback) => (typeof v === 'string' && v.trim() ? v.trim() : fallback)
   const tried = clean(t.tried, '(nothing yet)')
   const learned = clean(t.learned, '(nothing yet)')
-  const next = clean(t.next, '(open)')
+  let next = clean(t.next, '(open)')
+  const understood = clean(t.understood, '')
+  const wantsClose = t.stand === 'reached' || t.stand === 'let go'
+  // A refused close is written into the turn itself, not just the journal.
+  if (wantsClose && !understood) next += ' (the warden offered a close without a distillation; it was refused — nothing closes into nothing)'
 
   // Spawning — capped in code, refusals written down honestly.
   const wanted = Array.isArray(t.spawn) ? t.spawn.filter((s) => s && s.field && s.friction && s.better) : []
@@ -716,19 +769,22 @@ function runWardenOnce() {
   if (wanted.length > SPAWN_CAP) notes.push(`wanted ${wanted.length} spawns; the cap is ${SPAWN_CAP}`)
 
   const spawnedLine = (spawned.length ? spawned.join(', ') : 'none') + (notes.length ? ` (${notes.join('; ')})` : '')
+
+  // Vow 6: the warden's words are shown before they are written.
+  console.log(`\nThe turn the warden is about to write, in full:\n${fmtKV('tried', tried)}\n${fmtKV('learned', learned)}\n${fmtKV('next', next)}\n${fmtKV('spawned', spawnedLine)}${wantsClose && understood ? `\n${fmtKV('understood', understood)}` : ''}\n`)
+
   appendTurn(loop, { by: 'the warden', tried, learned, next, spawned: spawnedLine })
   const fresh = parseLoop(loop.file)
 
   let line = `turned ${loop.name} (turn ${fresh.turns.length})${spawned.length ? `, spawned ${spawned.join(', ')}` : ''}`
-  const understood = clean(t.understood, '')
-  if ((t.stand === 'reached' || t.stand === 'let go') && understood) {
+  if (wantsClose && understood) {
     closeLoop(fresh, {
       flavor: t.stand === 'reached' ? 'reached' : 'let go', by: 'the warden',
       evidence: clean(t.evidence, '(unsaid)'), because: clean(t.because, '(unsaid)'),
       understood, successor: null,
     })
     line += `, closed it (${t.stand}) — its understanding is in the keep`
-  } else if (t.stand === 'reached' || t.stand === 'let go') {
+  } else if (wantsClose) {
     line += `, wanted to close it but gave no distillation — it stays open (nothing closes into nothing)`
   }
   journal(line)
@@ -737,8 +793,13 @@ function runWardenOnce() {
 }
 
 function wardenStart(hoursArg) {
-  const hours = Math.max(1, Number(hoursArg) || 24)
+  let hours = 24
+  if (hoursArg !== undefined) {
+    hours = Number(hoursArg)
+    if (!Number.isInteger(hours) || hours < 1) die(`"${hoursArg}" is not a number of hours I can keep — whole hours, at least 1.`)
+  }
   const claude = findClaude()
+  if (!claude) die('the warden needs the `claude` CLI on this device, and `which claude` found nothing.')
   fs.mkdirSync(path.dirname(PLIST), { recursive: true })
   fs.writeFileSync(PLIST, `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -763,7 +824,7 @@ function wardenStart(hoursArg) {
   let r = spawnSync('launchctl', ['bootstrap', `gui/${uid}`, PLIST], { encoding: 'utf8' })
   if (r.status !== 0) r = spawnSync('launchctl', ['load', '-w', PLIST], { encoding: 'utf8' })
   if (r.status !== 0) die(`launchd would not take the warden (${(r.stderr || '').trim()}). The plist is at ${PLIST}.`)
-  journal(`ignited — one autonomous turn every ${hours}h (stop anytime: node castle.mjs warden stop)`)
+  journal(`woken — one autonomous turn every ${hours}h (stop anytime: node castle.mjs warden stop)`)
   drawMap()
   console.log(`The warden is awake: one autonomous turn every ${hours} hour${hours === 1 ? '' : 's'}.
 Every word it writes is labeled "by: the warden". Each turn spends a little of

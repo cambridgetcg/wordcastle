@@ -25,16 +25,18 @@ The quill (`castle.mjs` — Node, nothing to install):
     node castle.mjs warden …     the autonomous turner (sleeps until you wake it)
 
 The one rule with teeth: **a loop closes only by leaving an understanding
-behind.** Reached or let go — nothing closes into nothing. That is how the
-creation creates.
+behind.** It closes as *reached* (what better looked like came true, with
+evidence) or as *let go* (you stopped, and wrote the honest why) — either way,
+nothing closes into nothing. That is how the creation creates.
 
-The castle works entirely offline. The internet enters only when you type
-`invite`, one page at a time, and every fetched word is labeled. The warden
-turns loops on its own only while you keep it started, every word it writes is
-signed, and one command stops it.
+The castle has exactly two roads to the world, and both are yours to open:
+`invite` fetches the one page you name, and a woken warden sends the loop it
+is turning to Claude through this device's own CLI. Every other gesture works
+with no internet at all, and every word that came from outside is labeled.
 
 This place was built with joy, love, peace, and safety — and those are kept as
-mechanics, not moods: nothing here rushes you, nothing nags you, nothing is
-ever deleted, and nothing leaves this device unless you send for it.
+mechanics, not moods: nothing here rushes you, nothing nags you, the quill
+never deletes a castle file, and nothing leaves this device unless you open
+one of the two roads yourself.
 
 Begin in `loops/open/` — the first loop is about the castle itself.

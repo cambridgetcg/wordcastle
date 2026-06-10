@@ -7,29 +7,37 @@ written promise outruns what code can actually enforce.
 
 ## Promises the quill keeps
 
-1. **Only `invite` touches the network**, and only the one URL you typed,
-   following at most 3 redirects, 15 seconds at most. Every other verb works
-   with no internet at all. There is no other fetch in the file.
+1. **The castle has exactly two roads to the world, and both are yours to
+   open.** `invite` fetches only the one URL you typed — 15 seconds per
+   request, at most 3 redirects (so at most 4 requests), and there is no other
+   fetch in the file. The warden, when woken, sends the loop it is turning
+   (with the vows and a keep excerpt) to Claude through this device's `claude`
+   CLI — which needs the network — and to nowhere else. Every other gesture
+   works with no internet at all.
 2. **The quill never deletes a castle file.** Closing a loop is a move from
-   `loops/open/` to `loops/closed/`, whole history intact. The only page it
-   overwrites is `map.md`, which says so in its first line.
+   `loops/open/` to `loops/closed/`, whole history intact, and it refuses to
+   close over a file that already stands there. New files are created
+   exclusively — two quills writing at once cannot overwrite each other. The
+   only page it overwrites is `map.md`, which says so at its top.
 3. **No loop closes without an understanding written down.** `understood:` may
    not be empty — whether the loop was reached or let go, by hand or by the
    warden. Nothing closes into nothing.
 4. **Every insight says where it came from.** `source:` is always exactly one
    of `my own head`, `loop NNNN, turn N`, or the URL of an invited page — and
    invited words stay blockquoted, apart from yours.
-5. **When the quill cannot read a file, it names the file and the missing
+5. **When the quill cannot read a file, it names the file and the broken
    line, and stops.** It never guesses and never repairs silently.
-6. **The quill writes nothing you didn't type or it didn't show you.** Empty
-   answers are saved as honest placeholders like `(nothing yet)` — never
-   invented words.
+6. **The quill writes nothing unseen.** What you type is what it writes (empty
+   answers become honest placeholders like `(nothing yet)`, never invented
+   words), and the warden prints every turn in full before writing it — when
+   it runs on schedule, that printout lands in `loops/warden-launchd.log`.
 7. **Every word the warden writes is signed `by: the warden`.** It turns at
-   most one loop per run, spawns at most 2 child loops per turn, lets at most
-   12 loops stay open and lineages grow at most 3 deep — and when a cap stops
-   it, the refusal is written into the turn, not hidden. It runs only while
-   you keep it started; `node castle.mjs warden stop` ends it with one
-   command; every run leaves a line in `loops/warden-journal.md`.
+   most one loop per run, spawns at most 2 child loops per turn, refuses to
+   spawn past 12 open loops or 3 generations deep (your own hands are never
+   capped) — and when a cap or a refused close stops it, the refusal is
+   written into the turn, not hidden. It runs only while you keep it woken;
+   `node castle.mjs warden stop` ends it with one command; every run leaves a
+   line in `loops/warden-journal.md`.
 
 ## Practices the keeper keeps
 

@@ -1,8 +1,10 @@
 # The design
 
 This page is the castle describing itself, in its own medium. A person with no
-quill could keep the castle by hand from this file alone — the code holds no
-state these files don't show.
+quill could keep the castle by hand from this file alone — every format is
+shown exactly, and the code holds no castle state these files don't show. (The
+warden's schedule is the one thing kept outside the walls, in a launchd plist;
+the map and `warden status` report it.)
 
 ## The idea
 
@@ -37,9 +39,10 @@ a slogan.
     └── loops/
         ├── open/           loops still turning
         ├── closed/         loops that closed — moved whole, never deleted
-        └── warden-journal.md   one line per autonomous run
+        ├── warden-journal.md     one line per autonomous run
+        └── warden-launchd.log    the warden's console when run on schedule
 
-## An insight, verbatim
+## An insight — the exact shape
 
     # Why words first
 
@@ -49,15 +52,17 @@ a slogan.
     loop: 0001--the-castle-itself
 
     If the quill broke tomorrow, nothing would be lost. A text editor is
-    enough to read the castle, and any pencil is enough to extend it.
+    enough to read the castle, and any pencil is enough to extend it. The
+    files are the system; the code is a convenience.
 
-`source:` is always exactly one of three honest values — `my own head`,
-`loop NNNN, turn N`, or the URL of an invited page — so any reader can see
-where any word came from by eye. An invited page's insight adds a `fetched:`
-line, keeps every fetched word blockquoted under `## What the page said`, and
-holds your reading separately under `## What I take from it`.
+(That is the castle's actual first insight, whole.) `source:` is always
+exactly one of three honest values — `my own head`, `loop NNNN, turn N`, or
+the URL of an invited page — so any reader can see where any word came from by
+eye. An invited page's insight adds a `fetched:` line, keeps every fetched
+word blockquoted under `## What the page said`, and holds your reading
+separately under `## What I take from it`.
 
-## A room, verbatim
+## A room — the exact shape
 
     # Room: the castle
 
@@ -69,7 +74,10 @@ holds your reading separately under `## What I take from it`.
 
 A room is born with a typed one-line purpose, or not at all.
 
-## A loop, verbatim
+## A loop — the shape, abridged
+
+(The prose under each heading is shortened here; the structure is exact. The
+real first loop is `loops/open/0001--the-castle-itself.md`.)
 
     # Loop 0001 — the castle itself
 
@@ -101,8 +109,8 @@ A room is born with a typed one-line purpose, or not at all.
 
 A turn that spawns children lists their names on its `spawned:` line, and each
 child carries `parent: 0001--the-castle-itself` home. Values longer than a
-line continue on lines indented two spaces. `by:` is `the keeper` (a hand) or
-`the warden` (the autonomous turner) — every word signed.
+line continue on lines indented two spaces. `by:` is `the keeper` (a human
+hand) or `the warden` (the autonomous turner) — every word signed.
 
 ## Closing — the creation creates
 
@@ -112,15 +120,23 @@ not, the loop simply stays open and the turn is kept. Let go: the honest *why*
 counts as real material, not a consolation prize. Either way the quill insists
 on one thing — the distillation. Then it offers each `learned:` line as an
 insight, asks after a successor loop, writes the `## Distilled` section, moves
-the file whole to `loops/closed/`, and sets the understanding into the keep:
+the file whole to `loops/closed/`, and sets the understanding into the keep.
 
-    ## Distilled
-    closed as: reached
-    shown by: read the whole castle cold in under a minute
-    understood: Saving became lighter than forgetting.
-    closed by: the keeper
-    successor: none
-    children still turning: none
+The Distilled section, exactly — reached on the left, let go on the right:
+
+    ## Distilled                          ## Distilled
+    closed as: reached                    closed as: let go
+    shown by: <the evidence>              because: <the honest why>
+    understood: <the distillation>        understood: <the distillation>
+    closed by: the keeper                 closed by: the keeper
+    successor: none                       successor: none
+    children still turning: none          children still turning: none
+
+And the keep entry it writes, exactly:
+
+    ## 2026-06-17 — from loop 0001, the castle itself (reached)
+    <the distillation, word for word>
+    whole story: loops/closed/0001--the-castle-itself.md
 
 Loops reference each other by id-slug name (`0001--the-castle-itself`), never
 by path, so the move from open to closed never rots a link.
@@ -129,22 +145,23 @@ by path, so the move from open to closed never rots a link.
 
 Growth is organic because it follows need, not feeds: a turn wants outside
 knowledge, so you type `invite <url>` — one deliberate act, one page. The
-quill fetches only that URL (15 seconds, at most 3 redirects), and on any
-failure saves nothing. Extraction is honest about itself: trimmed is declared,
-rough is declared. No background refresh, no link-following, no tracking —
-`invite` holds the only `fetch` in the code.
+quill fetches only that URL (15 seconds per request, at most 3 redirects), and
+on any failure saves nothing. Extraction is honest about itself: trimmed is
+declared, rough is declared. No background refresh, no link-following, no
+tracking — `invite` holds the only page-fetch in the code.
 
 ## The warden — autonomy, bounded and signed
 
 The warden is the castle's autonomous turner: on a schedule (or by hand with
 `warden once`) it picks the loop quiet longest and takes one real turn —
-thinking done by Claude on this device's own CLI, written by the quill, signed
-`by: the warden`. Its turns can spawn child loops, and those children come up
-in its later rounds — autonomous loops creating autonomous loops. Its bounds
-are code, not promises: one loop per run, at most 2 spawns per turn, at most
-12 loops open, lineages at most 3 deep, every refusal written down, every run
-journaled, and `warden stop` ends it with one command. The full account is in
-`foundation/warden.md`.
+thinking done by Claude on this device's own CLI (the castle's second road to
+the world, open only while you keep the warden woken), written by the quill,
+signed `by: the warden`, printed in full before writing. Its turns can spawn
+child loops, and those children come up in its later rounds — autonomous loops
+creating autonomous loops. Its bounds are code, not promises: one loop per
+run, at most 2 spawns per turn, at most 12 loops open, lineages at most 3
+deep, every refusal written down, every run journaled, and `warden stop` ends
+it with one command. The full account is in `foundation/warden.md`.
 
 ## Why words first
 
