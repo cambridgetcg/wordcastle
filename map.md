@@ -12,4 +12,4 @@ redrawn: 2026-06-10 by the quill — every other page is yours to edit; not this
 nothing distilled yet — the loops are still turning
 
 ## The warden
-resting (autonomous turns are off) — wake it with: node castle.mjs warden start
+awake — one autonomous turn every 24 hours; journal: loops/warden-journal.md
