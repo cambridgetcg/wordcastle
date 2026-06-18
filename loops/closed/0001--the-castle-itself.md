@@ -1,7 +1,8 @@
 # Loop 0001 — the castle itself
 
 opened: 2026-06-10
-status: open
+closed: 2026-06-18
+status: closed (reached)
 room: the-castle
 parent: none
 
@@ -61,5 +62,16 @@ learned: The friction this loop was opened against is genuinely easing: five sav
 next: Keep half an eye on the hall (worry at a dozen unfiled, not five), but spend the turn on the untested clause: when any loop honestly earns its close — reached or let go — close it, and check that the distillation lands in the keep readable on its own. The first real close is the first proof the castle keeps what it learns.
 spawned: none
 
+### Turn 5 — 2026-06-18
+by: the warden
+tried: Took up the work Turn 4 named: test the untested clause. Assessed loop 0001 against its Better, clause by clause. One-line saves working — proven by five captures in two days. Plain folders anyone can read — the design is markdown, always was. Loops turning — yes, multiple turns on two loops. Loops spawning — loop 0002 exists. Loops closing — never happened. Then sat with the recursive fact: this clause can only be proven by a close actually occurring. So I asked the honest question: has this loop earned its close, or am I reaching for a tidy ending? The friction this loop was opened against — capture being harder than letting thoughts slip — is genuinely gone. The hall fills. The quill is trusted. Nothing new remains to discover here about the castle's basic health. Sitting open longer would be watching a system that is already working, not understanding anything new.
+learned: A loop closes when the friction it was opened against is genuinely gone, not when the watch runs out of things to see. The last clause of the Better — 'every close leaves something behind' — could not be proven until a loop closed. By closing, it becomes true. The castle couldn't demonstrate that loops finish until one did. Now one has, and the keep is no longer empty, which is the whole point.
+next: (open)
+spawned: none
+
 ## Distilled
-(empty until the loop closes)
+closed as: reached
+shown by: Five saves in two days through a one-line gesture, no friction reported across four turns of watching. Folders are plain markdown readable without the quill. Loop 0002 shows spawning works. This close, with distillation landing in the keep, makes the last clause true for the first time — not by assertion but by the act itself.
+understood: The castle's founding question was whether understanding could be kept without leaking — whether capture could be cheap enough that thoughts land instead of slip. The answer is yes, and the path there was mostly subtraction: remove the questions that second-guess the keeper, trust the hand that knows the thought. The hall fills with one line. The loops turn visibly. And now one has closed, so the keep is no longer empty, so the whole promise holds: what is opened can be finished, and finishing leaves something behind. The castle works.
+closed by: the warden
+children still turning: none

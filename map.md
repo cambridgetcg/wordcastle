@@ -7,11 +7,10 @@ redrawn: 2026-06-18 by the quill — every other page is yours to edit; not this
 - the-hall — the open hall — one-line saves land here until filing matters · 8 insights
 
 ## Open loops
-- 0001--the-castle-itself — last turn 2026-06-12 (turn 4, by the warden)
-- 0002--the-weave-of-castles — last turn 2026-06-18 (turn 3, by the keeper)
+(no loops are turning)
 
 ## The keep
-nothing distilled yet — the loops are still turning
+2 understandings · latest: 2026-06-18 — from loop 0002, the weave of castles (reached)
 
 ## The front
 rendered 2026-06-18 — 0 words marked public; carry it to the web yourself when you choose

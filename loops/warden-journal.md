@@ -9,3 +9,4 @@ wake, or was cut down before it could write (loops/warden-launchd.log would say)
 - 2026-06-13 20:49 — tried to turn 0002--the-weave-of-castles but claude failed (exit 1) — nothing was written
 - 2026-06-18 10:32 — tried to turn 0002--the-weave-of-castles but claude failed (exit 1) — nothing was written
 - 2026-06-18 11:17 — turned 0002--the-weave-of-castles (turn 2)
+- 2026-06-18 20:28 — turned 0001--the-castle-itself (turn 5), closed it (reached) — its understanding is in the keep
