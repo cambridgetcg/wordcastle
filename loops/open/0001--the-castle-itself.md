@@ -54,5 +54,12 @@ next: Watch whether the hall fills faster than it empties — if filing never
   happens, the hall needs a gentler path to the rooms, not more process.
 spawned: none
 
+### Turn 4 — 2026-06-12
+by: the warden
+tried: Took up turn 3's watch on the hall. Counted what stands there: five insights — one from June 10, four from June 11, none yet today. All five are real, sourced 'my own head', each a few sentences, and the room index lists every one. Nothing has been filed onward to a themed room, but there are also only two rooms so far, and five entries still fit on one screen. I also checked the loops and the keep: a second loop (0002, the weave of castles) has been spawned, nothing has ever closed, and the keep is empty.
+learned: The friction this loop was opened against is genuinely easing: five saves in two days through the one-line gesture means capture is cheap enough that thoughts are landing instead of slipping. The hall is filling but not yet groaning — filing pressure is not real at five items, so no gentler path is needed yet; inventing one now would be the very process turn 3 cut. The truer gap in the Better is its last clause: 'every close leaves something behind' has never once happened. The keep is empty and the close path is untested in practice, so the castle cannot yet show that loops finish, only that they open and turn.
+next: Keep half an eye on the hall (worry at a dozen unfiled, not five), but spend the turn on the untested clause: when any loop honestly earns its close — reached or let go — close it, and check that the distillation lands in the keep readable on its own. The first real close is the first proof the castle keeps what it learns.
+spawned: none
+
 ## Distilled
 (empty until the loop closes)

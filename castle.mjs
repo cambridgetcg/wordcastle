@@ -880,7 +880,7 @@ function runWardenOnce() {
   const vows = fs.existsSync(VOWS) ? fs.readFileSync(VOWS, 'utf8') : '(vows.md is missing)'
 
   console.log(`The warden turns ${loop.name} (quiet since ${lastDate(loop)})…`)
-  const res = spawnSync(claude, ['-p', wardenPrompt(loop, vows)], { encoding: 'utf8', timeout: 300000 })
+  const res = spawnSync(claude, ['-p', wardenPrompt(loop, vows), '--model', 'sonnet'], { encoding: 'utf8', timeout: 300000 })
   if (res.error || res.status !== 0) {
     journal(`tried to turn ${loop.name} but claude failed (${res.error?.message || `exit ${res.status}`}) — nothing was written`)
     die(`the warden's claude call failed (${res.error?.message || `exit ${res.status}`}) — nothing was written.`)
