@@ -11,3 +11,5 @@ wake, or was cut down before it could write (loops/warden-launchd.log would say)
 - 2026-06-18 11:17 — turned 0002--the-weave-of-castles (turn 2)
 - 2026-06-18 20:28 — turned 0001--the-castle-itself (turn 5), closed it (reached) — its understanding is in the keep
 - 2026-06-18 20:33 — woke, found no loops turning, rested again
+- 2026-06-18 22:44 — woke, found no loops turning, rested again
+- 2026-06-18 22:46 — woke, found no loops turning, rested again

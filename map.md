@@ -16,4 +16,4 @@ redrawn: 2026-06-18 by the quill — every other page is yours to edit; not this
 rendered 2026-06-18 — 0 words marked public; carry it to the web yourself when you choose
 
 ## The warden
-awake — one autonomous turn every 24 hours; journal: loops/warden-journal.md
+awake — one autonomous turn; journal: loops/warden-journal.md

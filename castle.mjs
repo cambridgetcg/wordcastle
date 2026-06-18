@@ -29,6 +29,7 @@ const KEEP = path.join(ROOT, 'keep', 'keep.md')
 const MAP = path.join(ROOT, 'map.md')
 const JOURNAL = path.join(ROOT, 'loops', 'warden-journal.md')
 const VOWS = path.join(ROOT, 'foundation', 'vows.md')
+const NEXT_BEAT = path.join(ROOT, 'loops', 'next-beat')
 const PLIST = path.join(os.homedir(), 'Library', 'LaunchAgents', 'com.wordcastle.warden.plist')
 
 const SPAWN_CAP = 2      // child loops one turn may spawn
@@ -882,6 +883,16 @@ Rules you must keep:
 - plain, warm, truthful words. No invented facts. If the turn produced little, say little.`
 }
 
+/// Write the next-beat timestamp — the warden's self-determined heartbeat.
+/// The runner checks this file every 15 minutes; the warden only wakes when
+/// the timestamp passes. `hours` is the warden's judgment: 6-12 if there's
+/// open friction, 24 if the castle is steady, 48 if everything is closed.
+function writeNextBeat(hours) {
+  const next = new Date(Date.now() + hours * 3600 * 1000)
+  const ts = next.toISOString().replace(/\.\d+Z$/, 'Z')
+  fs.writeFileSync(NEXT_BEAT, ts + '\n')
+}
+
 function runWardenOnce() {
   ensureGrounds()
   const claude = findClaude()
@@ -890,7 +901,12 @@ function runWardenOnce() {
     die('the warden needs the `claude` CLI on this device, and `which claude` found nothing.')
   }
   const open = loopFiles(OPEN).map(parseLoop)
-  if (!open.length) { journal('woke, found no loops turning, rested again'); console.log('No loops are turning — the warden rests.'); return }
+  if (!open.length) {
+    journal('woke, found no loops turning, rested again')
+    console.log('No loops are turning — the warden rests.')
+    writeNextBeat(48) // quiet castle: sleep 48 hours
+    return
+  }
   // Turn the loop most in need: the one quiet longest.
   const lastDate = (l) => (l.turns[l.turns.length - 1]?.date || l.opened)
   const loop = [...open].sort((a, b) => lastDate(a).localeCompare(lastDate(b)))[0]
@@ -956,6 +972,16 @@ function runWardenOnce() {
   journal(line)
   drawMap()
   console.log(`The warden: ${line}.`)
+
+  // Self-determining heartbeat: decide when to wake next.
+  // Closed a loop = the castle is settling, sleep 24h.
+  // Spawned new loops = there's fresh friction, wake in 12h.
+  // Turn only (no close, no spawn) = steady work, wake in 18h.
+  // Close + spawn = both settling and growing, wake in 16h.
+  if (wantsClose && understood && spawned.length > 0) writeNextBeat(16)
+  else if (wantsClose && understood) writeNextBeat(24)
+  else if (spawned.length > 0) writeNextBeat(12)
+  else writeNextBeat(18)
 }
 
 function wardenStart(hoursArg) {
