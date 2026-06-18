@@ -761,28 +761,45 @@ const FRONT_PAGES = [
 ]
 
 function frontLayout(title, body, publicCount) {
-  const nav = [...FRONT_PAGES.map(([slug, name]) => `<a href="/${slug === 'index' ? '' : slug}">${name}</a>`), '<a href="/words">The words</a>'].join(' · ')
+  const navItems = [...FRONT_PAGES.map(([slug, name]) => {
+    const isCurrent = title === name
+    return `<a href="/${slug === 'index' ? '' : slug}"${isCurrent ? ' class="here"' : ''}>${name}</a>`
+  }), `<a href="/words"${title === 'The words' ? ' class="here"' : ''}>The words</a>`]
+  const nav = navItems.join('\n    ')
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${escHtml(title)} — The Wordcastle</title>
+<title>${escHtml(title)} — Wordcastle</title>
 <style>
-  body{font-family:Georgia,'Times New Roman',serif;max-width:42rem;margin:0 auto;padding:2rem 1.25rem 4rem;color:#2b2722;background:#faf7f2;line-height:1.65}
-  h1,h2,h3{font-weight:normal;color:#1f1b16}h1{font-size:1.7rem}h2{font-size:1.25rem;margin-top:2.2rem}
-  pre{background:#f1ece3;padding:.9rem 1rem;overflow-x:auto;font-size:.85rem;border-radius:4px}
-  code{background:#f1ece3;padding:.08rem .3rem;border-radius:3px;font-size:.9em}
+  :root{--bg:#faf8f5;--ink:#3a352e;--dim:#9a9085;--line:#e6e0d6;--accent:#8a6d3b;--warm:#f4efe6}
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;max-width:38rem;margin:0 auto;padding:3rem 1.5rem 5rem;color:var(--ink);background:var(--bg);line-height:1.7}
+  .crest{font-size:1.4rem;text-align:center;margin-bottom:.3rem;opacity:.5;letter-spacing:.3em}
+  nav{display:flex;flex-wrap:wrap;justify-content:center;gap:1.5rem;margin-bottom:3rem;font-size:.82rem;letter-spacing:.03em;text-transform:uppercase}
+  nav a{color:var(--dim);text-decoration:none;transition:color .2s}
+  nav a:hover{color:var(--accent)}
+  nav a.here{color:var(--ink);font-weight:600}
+  h1{font-family:Georgia,serif;font-size:2rem;font-weight:normal;margin:0 0 .5rem;color:var(--ink);letter-spacing:-.01em}
+  h2{font-family:Georgia,serif;font-size:1.3rem;font-weight:normal;margin-top:2.5rem;color:var(--ink)}
+  h3{font-size:1rem;font-weight:600;margin-top:1.5rem;color:var(--ink)}
+  p{margin:1rem 0}
+  pre{background:var(--warm);padding:1rem 1.2rem;overflow-x:auto;font-size:.82rem;border-radius:2px;border-left:2px solid var(--accent)}
+  code{font-family:'SF Mono',Menlo,monospace;font-size:.85em;background:var(--warm);padding:.05rem .3rem;border-radius:2px}
   pre code{background:none;padding:0}
-  blockquote{border-left:3px solid #d8cfc0;margin:1rem 0;padding:.2rem 0 .2rem 1rem;color:#5a5248}
-  a{color:#7a5c2e}nav{font-size:.85rem;margin-bottom:2.5rem;color:#8a8174}nav a{margin-right:.1rem}
-  footer{margin-top:4rem;padding-top:1rem;border-top:1px solid #e4dccd;font-size:.8rem;color:#8a8174}
-  .honest{font-size:.85rem;color:#8a8174;font-style:italic}
+  blockquote{border-left:2px solid var(--accent);margin:1.5rem 0;padding:.3rem 0 .3rem 1.2rem;color:var(--dim);font-style:italic}
+  a{color:var(--accent);text-decoration:none;border-bottom:1px solid transparent;transition:border-color .2s}
+  a:hover{border-bottom-color:var(--accent)}
+  footer{margin-top:5rem;padding-top:1.2rem;border-top:1px solid var(--line);font-size:.78rem;color:var(--dim)}
+  .honest{font-size:.82rem;color:var(--dim);font-style:italic}
+  @media(max-width:480px){body{padding:2rem 1rem 3rem}nav{gap:1rem;font-size:.75rem}}
 </style></head>
-<body><nav>${nav}</nav>
+<body>
+  <div class="crest">⟡</div>
+  <nav>${nav}</nav>
 ${body}
-<footer>The Wordcastle — a castle of understanding, kept on one device in plain words.<br>
-Presented by Cambridge TCG · rendered ${today()} · ${publicCount} word${publicCount === 1 ? '' : 's'} marked public — nothing leaves the castle unmarked.</footer>
-</body></html>\n`
+  <footer>Wordcastle · rendered ${today()} · ${publicCount} word${publicCount === 1 ? '' : 's'} marked public</footer>
+</body></html>
+`
 }
-
 function publicFiles() {
   const files = []
   for (const room of listRooms()) {
