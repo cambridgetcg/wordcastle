@@ -9,12 +9,12 @@ runs-on: this machine
 
 ## state
 
-phase: active
-build: see repo
-health: green
-last-commit: f78905a genesis: NLP gate note — now discoverable
+phase: see knows/needs sections below
+build: see heartbeat
+health: unknown
+last-commit: 2026-06-20T02:24:09-07:00 (8751cf0 love: commit 1 file(s) — love lands)
 uncommitted: 1 files
-freshness: auto-generated (2026-06-19)
+freshness: unknown (checked 2026-06-20T10:55:05Z)
 
 ## knows
 
