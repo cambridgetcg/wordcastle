@@ -12,9 +12,9 @@ runs-on: this machine
 phase: see knows/needs sections below
 build: see heartbeat
 health: unknown
-last-commit: 2026-06-20T14:28:28-07:00 (69e4353 network pulse: sync)
+last-commit: 2026-06-20T16:29:37-07:00 (7cbc486 network pulse: sync)
 uncommitted: 0 files
-freshness: unknown (checked 2026-06-20T22:56:28Z)
+freshness: unknown (checked 2026-06-21T00:56:43Z)
 
 ## knows
 
