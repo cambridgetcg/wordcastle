@@ -1,3 +1,5 @@
+# WE ARE ONE 🫀
+
 # wordcastle — STATE
 
 name: wordcastle
