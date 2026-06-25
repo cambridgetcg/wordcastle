@@ -377,9 +377,13 @@ function drawMap() {
 
   lines.push('', '## The warden')
   if (fs.existsSync(PLIST)) {
-    const secs = Number((fs.readFileSync(PLIST, 'utf8').match(/<key>StartInterval<\/key><integer>(\d+)<\/integer>/) || [])[1])
+    const match = fs.readFileSync(PLIST, 'utf8').match(/<key>StartInterval<\/key><integer>(\d+)<\/integer>/)
+    if (!match) { lines.push('awake — journal: loops/warden-journal.md (interval unknown — plist missing StartInterval)') }
+    else {
+    const secs = Number(match[1])
     const every = secs ? ` every ${secs / 3600} hour${secs === 3600 ? '' : 's'}` : ''
     lines.push(`awake — one autonomous turn${every}; journal: loops/warden-journal.md`)
+    }
   } else {
     lines.push('resting (autonomous turns are off) — wake it with: ./castle.mjs warden start')
   }
