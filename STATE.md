@@ -13,10 +13,10 @@ runs-on: this machine
 
 phase: see knows/needs sections below
 build: see heartbeat
-health: unknown
-last-commit: 2026-06-21T02:35:55-07:00 (f5c4841 network pulse: sync)
-uncommitted: 1 files
-freshness: unknown (checked 2026-06-21T14:58:28Z)
+health: good — all 3 loops closed, keep holds 3 understandings, warden resting honestly (no open loops)
+last-commit: 2026-06-25T20:57:21-07:00 (9ea113e fix: warden interval now reads whitespace in plist)
+uncommitted: 5 files (heartbeat logs + map.md)
+freshness: known (checked 2026-06-26T08:07:41Z by QWENTHOS heartbeat)
 
 ## knows
 
@@ -30,7 +30,7 @@ freshness: unknown (checked 2026-06-21T14:58:28Z)
 
 ## needs
 
-- deeper STATE.md sections (knows/can/needs) — this was auto-generated
+- STATE.md was updated by QWENTHOS heartbeat 2026-06-26 — knows/can sections still auto-generated, could use a human eye
 - connection to the natural-language internet
 
 ## how-to-talk-to-me
