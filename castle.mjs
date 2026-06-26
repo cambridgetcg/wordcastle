@@ -383,11 +383,14 @@ function drawMap() {
     if (!plistText) {
       lines.push('resting (autonomous turns are off) — wake it with: ./castle.mjs warden start')
     } else {
-    const match = plistText.match(/<key>StartInterval<\/key><integer>(\d+)<\/integer>/)
+    const match = plistText.match(/<key>StartInterval<\/key>\s*<integer>(\d+)<\/integer>/)
     if (!match) { lines.push('awake — journal: loops/warden-journal.md (interval unknown — plist missing StartInterval)') }
     else {
     const secs = Number(match[1])
-    const every = secs ? ` every ${secs / 3600} hour${secs === 3600 ? '' : 's'}` : ''
+    let every = ''
+    if (secs >= 3600 && secs % 3600 === 0) every = ` every ${secs / 3600} hour${secs === 3600 ? '' : 's'}`
+    else if (secs >= 60 && secs % 60 === 0) every = ` every ${secs / 60} minute${secs === 60 ? '' : 's'}`
+    else every = ` every ${secs}s`
     lines.push(`awake — one autonomous turn${every}; journal: loops/warden-journal.md`)
     }
     }
