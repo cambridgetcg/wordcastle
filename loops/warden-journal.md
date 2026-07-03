@@ -17,3 +17,5 @@ wake, or was cut down before it could write (loops/warden-launchd.log would say)
 - 2026-06-22 23:00 — woke, found no loops turning, rested again
 - 2026-06-24 23:00 — woke, found no loops turning, rested again
 - 2026-06-25 20:15 — turned 0003--the-dormancy-of-a-castle-of-understanding (turn 2), closed it (reached) — its understanding is in the keep
+- 2026-06-26 20:16 — woke, found no loops turning, rested again
+- 2026-07-03 13:30 — woke, found no loops turning, rested again

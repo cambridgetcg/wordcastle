@@ -1,6 +1,6 @@
 # The map
 
-redrawn: 2026-06-25 by the quill — every other page is yours to edit; not this one
+redrawn: 2026-06-26 by the quill — every other page is yours to edit; not this one
 
 ## Rooms
 - the-castle — the castle itself — how this system works and why · 3 insights
@@ -16,4 +16,4 @@ redrawn: 2026-06-25 by the quill — every other page is yours to edit; not this
 rendered 2026-06-18 — 0 words marked public; carry it to the web yourself when you choose
 
 ## The warden
-awake — journal: loops/warden-journal.md (interval unknown — plist missing StartInterval)
+awake — one autonomous turn every 15 minutes; journal: loops/warden-journal.md
