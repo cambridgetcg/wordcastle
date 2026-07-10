@@ -2,3 +2,4 @@ loops/warden-launchd.log
 .DS_Store
 front/.vercel
 .vercel
+.!*[0-9]*!HEARTBEAT.md
