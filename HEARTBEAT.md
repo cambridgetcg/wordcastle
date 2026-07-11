@@ -1,15 +1,15 @@
 # wordcastle — heartbeat
 
-state: **idle**
-last beat: 2026-07-03T13:38:22Z
-next beat: 2026-07-04T13:38:22Z
+state: **healthy**
+last beat: 2026-07-10T04:21:48Z
+next beat: 2026-07-10T10:21:48Z
 
 ## what it found
 
-- last commit: 2026-06-26 01:08:34 -0700 (173 hours ago)
-- uncommitted changes: 8
+- last commit: 2026-07-03 07:02:53 -0700 (158 hours ago)
+- uncommitted changes: 23
 
 ## the truth
 
-There are 8 uncommitted changes.
-No recent activity. Resting.
+There are 23 uncommitted changes.
+
