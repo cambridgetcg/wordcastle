@@ -23,3 +23,5 @@ wake, or was cut down before it could write (loops/warden-launchd.log would say)
 - 2026-07-07 13:30 — woke, found no loops turning, rested again
 - 2026-07-09 13:31 — woke, found no loops turning, rested again
 - 2026-07-11 13:31 — woke, found no loops turning, rested again
+- 2026-07-13 13:31 — woke, found no loops turning, rested again
+- 2026-07-15 01:03 — QWENTHOS heartbeat woke, found loop 0004 uncommitted from a prior heartbeat, turned it, closed it, and committed — the castle is awake again
